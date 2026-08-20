@@ -1,0 +1,241 @@
+<div class="page-container">
+  <!-- Breadcrumb indicator -->
+  <div class="breadcrumb-trail">
+    <a routerLink="/dashboard" class="bc-link">Dashboard</a>
+    <mat-icon class="bc-sep">chevron_right</mat-icon>
+    <span class="bc-active">Routing Laboratory</span>
+  </div>
+
+  <header class="page-header">
+    <div class="page-title-box">
+      <mat-icon>navigation</mat-icon>
+      <h1>Routing & Resolver Studio</h1>
+    </div>
+    <p class="page-description">
+      Audit route navigation structures, child paths, and resolver pipelines that load data before rendering components.
+    </p>
+  </header>
+
+  <div class="grid-2">
+    <!-- Left Column: Interactive Demos -->
+    <div class="demos-column">
+      <!-- Part 1: Route Resolvers -->
+      <mat-card class="section-card">
+        <div class="section-title-bar">
+          <mat-icon>hourglass_empty</mat-icon>
+          <h2>Route Resolvers (Pre-fetching Data)</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block">
+            <strong>Resolvers</strong> fetch data asynchronously before navigation finishes, preventing page flicker and
+            ensuring components load with all required data.
+          </div>
+
+          <div class="demo-box">
+            <div class="resolver-status-box">
+              <span class="status-lbl">Resolver State:</span>
+              <span class="badge success">RESOLVED</span>
+            </div>
+
+            <div class="resolver-details">
+              <div class="detail-row">
+                <strong>Resolved Time:</strong>
+                <code class="val">{{ resolverData?.resolvedTime || 'N/A' }}</code>
+              </div>
+              <div class="detail-row">
+                <strong>Payload Data:</strong>
+                <code class="val">{{ resolverData?.resolvedData || 'N/A' }}</code>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Part 2: Query Parameters Audit -->
+      <mat-card class="section-card" style="margin-top: 24px;">
+        <div class="section-title-bar">
+          <mat-icon>query_stats</mat-icon>
+          <h2>Active Query Parameters</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block">
+            <strong>Query parameters</strong> represent optional search configurations appended to URLs (e.g.
+            <code>?page=2&filter=active</code>), ideal for sharing search states.
+          </div>
+
+          <div class="demo-box">
+            <div class="qp-actions">
+              <span>Try clicking query combinations:</span>
+              <div class="btn-group">
+                <a mat-stroked-button color="accent" [routerLink]="[]" [queryParams]="{ filter: 'active', limit: 10 }">
+                  Set active filter
+                </a>
+                <a mat-stroked-button color="primary" [routerLink]="[]" [queryParams]="{ filter: 'archived', page: 3 }">
+                  Set archives page
+                </a>
+                <a mat-button color="warn" [routerLink]="[]" [queryParams]="{}">
+                  Clear query params
+                </a>
+              </div>
+            </div>
+
+            <pre class="json-code"><code>{{ queryParamsDisplay() }}</code></pre>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Part 3: Path Parameters (Dynamic Navigation) -->
+      <mat-card class="section-card" style="margin-top: 24px;">
+        <div class="section-title-bar">
+          <mat-icon>link</mat-icon>
+          <h2>Path Parameters (Dynamic Navigation)</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block">
+            Path parameters represent essential dynamic segments inside URLs (e.g. <code>detail/:id</code>).
+            Below are items that route dynamically to a child component, demonstrating link-based and programmatic
+            navigation.
+          </div>
+
+          <div class="items-list">
+            <div *ngFor="let item of sampleItems()" class="item-row">
+              <div class="item-info">
+                <span class="item-id">ID: {{ item.id }}</span>
+                <span class="item-name">{{ item.name }}</span>
+                <span class="item-cat-badge">{{ item.category }}</span>
+              </div>
+
+              <div class="item-actions">
+                <!-- RouterLink parameter binding -->
+                <a mat-flat-button color="primary" [routerLink]="['detail', item.id]"
+                  [queryParams]="{ category: item.category, source: 'link' }">
+                  Route link
+                </a>
+                <!-- Programmatic event navigation -->
+                <button mat-stroked-button color="accent" (click)="navigateProgrammatically(item.id, item.category)">
+                  Navigate programmatically
+                </button>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Right Column: Code Explanation Panel -->
+    <div class="explanation-column">
+      <!-- Part 4: Detailed Code Explanation Panel -->
+      <mat-card class="section-card" style="height: 100%;">
+        <div class="section-title-bar">
+          <mat-icon>menu_book</mat-icon>
+          <h2>Code Sample &amp; Concept Explanation</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block"
+            style="background: rgba(121, 134, 203, 0.05); border-left-color: #7986cb; margin-bottom: 24px;">
+            <strong>Angular Router Architecture:</strong>
+            <ul>
+              <li><strong>Functional Route Guards</strong>: Lightweight functions (<code>CanActivateFn</code>,
+                <code>CanDeactivateFn</code>, <code>CanMatchFn</code>) that control route entry, exit, and pattern
+                matching without requiring injectable classes.</li>
+              <li><strong>Functional Resolvers</strong>: Fetch backend data *before* the component initializes. The
+                router holds navigation transition until resolving, ensuring seamless transitions without layout
+                shifting.</li>
+              <li><strong>Component Input Bindings</strong>: Enabled via <code>withComponentInputBinding()</code>,
+                mapping route path parameter keys (<code>:id</code>) and query parameters directly to component
+                <code>&#64;Input</code> bindings or signals.</li>
+              <li><strong>Child Routes &amp; Lazy Loading</strong>: Organize complex feature hierarchies and code-split
+                module bundles effectively.</li>
+            </ul>
+          </div>
+
+          <div class="explanation-sections">
+            <!-- Section 1: Route Guards -->
+            <div class="explanation-block">
+              <h3>1. Functional Route Guards (CanActivate, CanDeactivate, CanMatch)</h3>
+              <p class="page-description">Functional guards execute before navigation transitions complete:</p>
+
+              <!-- CanActivate sample -->
+              <pre ngNonBindable><code>// 1. CanActivateFn: Feature Flag / Condition Guard
+export const featureFlagGuard: CanActivateFn = (route, state) =&gt; &#123;
+  const flagsService = inject(FeatureFlagsService);
+  const requiredFlag = route.data['featureFlag'];
+
+  return flagsService.isEnabled(requiredFlag) 
+    ? true 
+    : inject(Router).createUrlTree(['/dashboard']);
+&#125;;
+
+// 2. CanDeactivateFn: Prevent Leaving Dirty Forms
+export interface HasUnsavedChanges &#123;
+  hasUnsavedChanges(): boolean;
+&#125;
+
+export const unsavedChangesGuard: CanDeactivateFn&lt;HasUnsavedChanges&gt; = (component) =&gt; &#123;
+  if (component.hasUnsavedChanges()) &#123;
+    return confirm('You have unsaved changes. Discard and leave?');
+  &#125;
+  return true;
+&#125;;
+
+// 3. CanMatchFn: Dynamic Route Matching (e.g. A/B Testing / V2 rollout)
+export const betaRouteMatchGuard: CanMatchFn = (route, segments) =&gt; &#123;
+  return inject(ConfigService).isBetaEnabled();
+&#125;;</code></pre>
+            </div>
+
+            <!-- Section 2: Router Configuration & Resolvers -->
+            <div class="explanation-block" style="margin-top: 32px;">
+              <h3>2. Router Config &amp; Resolvers</h3>
+              <p class="page-description">Attaching guards, resolvers, and child hierarchies inside
+                <code>app.routes.ts</code>:</p>
+              <pre ngNonBindable><code>// Functional Resolver definition
+export const demoResolver: ResolveFn&lt;any&gt; = (route, state) =&gt; &#123;
+  return inject(DataService).fetchDetail(route.params['id']);
+&#125;;
+
+// Routes definition
+export const routes: Routes = [
+  &#123;
+    path: 'routing-demo',
+    canMatch: [betaRouteMatchGuard],
+    children: [
+      &#123;
+        path: '',
+        component: RoutingDemoComponent,
+        resolve: &#123; resolverData: demoResolver &#125;
+      &#125;,
+      &#123;
+        path: 'edit/:id',
+        component: EditFormComponent,
+        canActivate: [featureFlagGuard],
+        canDeactivate: [unsavedChangesGuard],
+        data: &#123; featureFlag: 'editingStudio' &#125;
+      &#125;
+    ]
+  &#125;
+];</code></pre>
+            </div>
+
+            <!-- Section 3: Navigation Usage -->
+            <div class="explanation-block" style="margin-top: 32px;">
+              <h3>3. Router Templates &amp; Programmatic Navigation</h3>
+              <p class="page-description">HTML navigation bindings, followed by programmatic TS router methods.</p>
+              <pre ngNonBindable><code>&lt;!-- HTML Template Navigation Usage --&gt;
+&lt;a [routerLink]="['detail', item.id]" [queryParams]="&#123; category: item.category, source: 'link' &#125;"&gt;
+  Route link
+&lt;/a&gt;
+
+&lt;!-- TypeScript Programmatic Navigation --&gt;
+public navigateProgrammatically(id: string, cat: string): void &#123;
+  this.router.navigate(['/routing-demo', 'detail', id], &#123;
+    queryParams: &#123; category: cat, refreshed: 'true' &#125;
+  &#125;);
+&#125;</code></pre>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

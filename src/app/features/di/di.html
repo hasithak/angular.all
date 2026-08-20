@@ -1,0 +1,219 @@
+<div class="page-container">
+  <header class="page-header">
+    <div class="page-title-box">
+      <mat-icon>mediation</mat-icon>
+      <h1>Dependency Injection Laboratory</h1>
+    </div>
+    <p class="page-description">
+      Audit Angular's Hierarchical Injector engine. Inspect class overrides, static values, runtime factory generation, and component-scoped isolation.
+    </p>
+  </header>
+
+  <div class="grid-2">
+    <!-- Left Column: Interactive Demos -->
+    <div class="demos-column">
+      <!-- Part 1: Injected Providers Inspector -->
+      <mat-card class="section-card">
+        <div class="section-title-bar">
+          <mat-icon>account_tree</mat-icon>
+          <h2>Injected Providers Inspector</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block">
+            Angular relies on constructor dependency injection. Configured providers resolve dependencies at compile or runtime, supporting loose coupling.
+          </div>
+
+          <div class="di-table-wrapper">
+            <table class="di-table">
+              <thead>
+                <tr>
+                  <th>DI Strategy</th>
+                  <th>Token Name</th>
+                  <th>Configuration / Provider Type</th>
+                  <th>Resolved Runtime Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- 1. Singleton Service -->
+                <tr>
+                  <td>
+                    <span class="badge di-badge root">ROOT</span>
+                  </td>
+                  <td><code>LoggingService</code></td>
+                  <td><code>&#64;Injectable(&#123; providedIn: 'root' &#125;)</code><br><small>Singleton Service</small></td>
+                  <td>
+                    <div class="resolved-cell">
+                      <span>Active & streaming.</span>
+                      <button mat-stroked-button color="accent" (click)="triggerConsoleLogAlert()">
+                        Log Debug Event
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- 2. Value Provider (API URL) -->
+                <tr>
+                  <td>
+                    <span class="badge di-badge value">VALUE</span>
+                  </td>
+                  <td><code>API_URL</code></td>
+                  <td><code>&#123; provide: API_URL, useValue: '...' &#125;</code><br><small>Static String Token</small></td>
+                  <td>
+                    <code class="value-text">{{ apiUrl }}</code>
+                  </td>
+                </tr>
+
+                <!-- 3. Value Provider (AppConfig) -->
+                <tr>
+                  <td>
+                    <span class="badge di-badge value">VALUE</span>
+                  </td>
+                  <td><code>APP_CONFIG</code></td>
+                  <td><code>&#123; provide: APP_CONFIG, useValue: AppConfig &#125;</code><br><small>Complex Object Value</small></td>
+                  <td>
+                    <pre class="json-code"><code>{{ appConfig | json }}</code></pre>
+                  </td>
+                </tr>
+
+                <!-- 4. Factory Provider -->
+                <tr>
+                  <td>
+                    <span class="badge di-badge factory">FACTORY</span>
+                  </td>
+                  <td><code>LOGGER_CONFIG</code></td>
+                  <td><code>&#123; provide: LOGGER_CONFIG, useFactory: loggerFactory, deps: [APP_CONFIG] &#125;</code><br><small>Dynamic generation via dependencies</small></td>
+                  <td>
+                    <pre class="json-code"><code>{{ loggerConfig | json }}</code></pre>
+                  </td>
+                </tr>
+
+                <!-- 5. Class Provider -->
+                <tr>
+                  <td>
+                    <span class="badge di-badge class">CLASS</span>
+                  </td>
+                  <td><code>ErrorHandler</code></td>
+                  <td><code>&#123; provide: ErrorHandler, useClass: GlobalErrorHandler &#125;</code><br><small>Override default class wrapper</small></td>
+                  <td>
+                    <div class="resolved-cell">
+                      <span class="status-indicator" [class.success]="isGlobalErrorHandlerActive()">
+                        <mat-icon>{{ isGlobalErrorHandlerActive() ? 'check_circle' : 'cancel' }}</mat-icon>
+                        {{ isGlobalErrorHandlerActive() ? 'GlobalErrorHandler Override Active' : 'Default ErrorHandler' }}
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- 6. Component-scoped Provider -->
+                <tr>
+                  <td>
+                    <span class="badge di-badge component">COMPONENT</span>
+                  </td>
+                  <td><code>ScopedFeatureService</code></td>
+                  <td><code>providers: [ScopedFeatureService]</code><br><small>Hierarchical isolation scoped to view</small></td>
+                  <td>
+                    <div class="resolved-cell">
+                      <code class="value-text highlight">{{ getScopedServiceId() }}</code>
+                      <span class="detail-note">Tied strictly to component lifecycle. If you refresh or re-enter this route, a new isolated instance is initialized.</span>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Part 2: DI Resolution Modifiers -->
+      <mat-card class="section-card" style="margin-top: 24px;">
+        <div class="section-title-bar">
+          <mat-icon>hierarchy</mat-icon>
+          <h2>Advanced DI Resolution Modifiers</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block">
+            Angular resolution modifiers (<code>&#64;Self</code>, <code>&#64;SkipSelf</code>, <code>&#64;Host</code>, <code>&#64;Optional</code>) modify how Angular searches up the element injector tree to resolve dependencies.
+          </div>
+
+          <div class="demo-box" style="padding: 10px;">
+            <!-- Mount the parent node which nests child and grandchild components -->
+            <app-di-parent></app-di-parent>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Right Column: Code Explanation Panel -->
+    <div class="explanation-column">
+      <!-- Part 2: Detailed Code Explanation Panel -->
+      <mat-card class="section-card" style="height: 100%;">
+        <div class="section-title-bar">
+          <mat-icon>menu_book</mat-icon>
+          <h2>Code Sample &amp; Concept Explanation</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block" style="background: rgba(121, 134, 203, 0.05); border-left-color: #7986cb; margin-bottom: 24px;">
+            <strong>Hierarchical Injector System &amp; Modifiers:</strong>
+            <ul>
+              <li><strong>value providers (useValue)</strong>: Bind static values or structures to DI tokens. Ideal for endpoints, keys, and global environments.</li>
+              <li><strong>factory providers (useFactory)</strong>: Calculate resolved values at runtime, utilizing other injected services as inputs.</li>
+              <li><strong>class providers (useClass)</strong>: Substitute implementations (e.g. replacing standard ErrorHandler with GlobalErrorHandler).</li>
+              <li><strong>Resolution Modifiers</strong>: Define where lookups start (e.g., <code>&#64;SkipSelf()</code> starts at parent) and when to fail gracefully (<code>&#64;Optional()</code>).</li>
+            </ul>
+          </div>
+
+          <div class="explanation-sections">
+            <div class="explanation-block">
+              <h3>1. Value &amp; Factory Providers</h3>
+              <p class="page-description">Reading values in HTML templates, followed by configuration setups in <code>app.config.ts</code>.</p>
+              <pre ngNonBindable><code>&lt;!-- HTML Template Usage --&gt;
+&lt;div&gt;Resolved API: &#123;&#123; apiUrl &#125;&#125;&lt;/div&gt;
+&lt;div&gt;Prefix: &#123;&#123; loggerConfig.prefix &#125;&#125;&lt;/div&gt;
+
+&lt;!-- Provider Registration in app.config.ts --&gt;
+// 1. Value Provider registration
+&#123; provide: API_URL, useValue: 'https://api.example.com' &#125;,
+
+// 2. Factory function and registration
+export function loggerConfigFactory(config: AppConfig): LoggerConfig &#123;
+  return &#123;
+    prefix: `[$&#123;config.appName&#125;]`,
+    logLevel: config.environment === 'production' ? 'warn' : 'debug'
+  &#125;;
+&#125;
+
+&#123;
+  provide: LOGGER_CONFIG,
+  useFactory: loggerConfigFactory,
+  deps: [APP_CONFIG]
+&#125;</code></pre>
+            </div>
+
+            <div class="explanation-block" style="margin-top: 32px;">
+              <h3>2. Resolution Modifiers Usage</h3>
+              <p class="page-description">Configuring injector tree search scopes using constructor decorator tokens.</p>
+              <pre ngNonBindable><code>import &#123; Component, Self, SkipSelf, Optional &#125; from '&#64;angular/core';
+
+&#64;Component(&#123;
+  selector: 'app-di-grandchild',
+  template: `
+    &lt;li&gt;Self: &#123;&#123; selfVal &#125;&#125;&lt;/li&gt;
+    &lt;li&gt;SkipSelf: &#123;&#123; skipSelfVal &#125;&#125;&lt;/li&gt;
+  `
+&#125;)
+export class DiGrandchildComponent &#123;
+  constructor(
+    // Looks only at grandchild; resolves to null if missing instead of error
+    &#64;Self() &#64;Optional() private selfSvc: ValueService,
+
+    // Starts lookup at child injector, bypassing grandchild
+    &#64;SkipSelf() &#64;Optional() private skipSelfSvc: ValueService
+  ) &#123;&#125;
+&#125;</code></pre>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

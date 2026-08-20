@@ -1,0 +1,130 @@
+<div class="page-container">
+  <header class="page-header">
+    <div class="page-title-box">
+      <mat-icon>vertical_align_center</mat-icon>
+      <h1>Multi-Slot Content Projection</h1>
+    </div>
+    <p class="page-description">
+      Learn how to build highly reusable wrapper widgets using ng-content selectors to project custom HTML templates into specific slots of a child layout.
+    </p>
+  </header>
+
+  <div class="grid-2">
+    <!-- Left Column: Interactive Sandbox -->
+    <mat-card class="section-card">
+      <div class="section-title-bar">
+        <mat-icon>science</mat-icon>
+        <h2>Interactive Sandbox</h2>
+      </div>
+      <mat-card-content class="section-content">
+        <div class="theory-block">
+          <strong>How to test this demo:</strong>
+          <ol>
+            <li>Observe how the card below integrates a custom header settings button, a main description text, and bottom primary action buttons.</li>
+            <li>Click the settings gear icon in the header, or the <strong>"CANCEL"</strong> / <strong>"CONFIRM"</strong> footer buttons. These events are declared inside the parent component template, but rendered and projected cleanly inside the child card container.</li>
+          </ol>
+        </div>
+
+        <div class="demo-box">
+          <!-- Using SharedCardComponent with Content Projection -->
+          <app-shared-card title="Projected Card Demo" subtitle="Inspected via ContentChild">
+            <!-- Header actions slot -->
+            <div card-header-actions>
+              <button mat-icon-button color="primary" (click)="handleChildAlert('Header settings button clicked!')">
+                <mat-icon>settings</mat-icon>
+              </button>
+            </div>
+
+            <!-- Default slot (card body) -->
+            <p>
+              This entire paragraph is defined in the parent component template, but is projected and rendered inside the body of the child component card!
+            </p>
+            <div class="projected-highlight">
+              Custom layout elements inside cards are fully modular.
+            </div>
+
+            <!-- Footer actions slot -->
+            <div card-footer-buttons>
+              <button mat-button color="warn" (click)="handleChildAlert('Cancel pressed on projected card')">CANCEL</button>
+              <button mat-flat-button color="primary" (click)="handleChildAlert('Submit pressed on projected card')">CONFIRM</button>
+            </div>
+          </app-shared-card>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Right Column: Code Explanation Panel -->
+    <mat-card class="section-card">
+      <div class="section-title-bar">
+        <mat-icon>code</mat-icon>
+        <h2>Code Sample & Concept Explanation</h2>
+      </div>
+      <mat-card-content class="section-content">
+        <div class="theory-block" style="background: rgba(121, 134, 203, 0.05); border-left-color: #7986cb;">
+          <strong>Target Selection Rules:</strong>
+          <ul>
+            <li><strong>Select Attribute</strong>: The selector is specified inside <code>&lt;ng-content select="[attribute-name]"&gt;</code>. Any elements bearing that attribute will match and populate the slot.</li>
+            <li><strong>Default Fallback Slot</strong>: An <code>&lt;ng-content&gt;</code> tag without a <code>select</code> attribute acts as the default slot. Any elements not matching other slots accumulate there.</li>
+          </ul>
+        </div>
+
+        <h3>1. Parent HTML Layout</h3>
+        <pre ngNonBindable><code>&lt;app-shared-card title="Projected Card Demo" subtitle="Inspected via ContentChild"&gt;
+  &lt;!-- Projects into card-header-actions slot --&gt;
+  &lt;div card-header-actions&gt;
+    &lt;button mat-icon-button color="primary" (click)="handleChildAlert('Header settings button clicked!')"&gt;
+      &lt;mat-icon&gt;settings&lt;/mat-icon&gt;
+    &lt;/button&gt;
+  &lt;/div&gt;
+
+  &lt;!-- Projects into default (body) slot --&gt;
+  &lt;p&gt;
+    This entire paragraph is defined in the parent component template, but is projected and rendered inside the body of the child component card!
+  &lt;/p&gt;
+  &lt;div class="projected-highlight"&gt;
+    Custom layout elements inside cards are fully modular.
+  &lt;/div&gt;
+
+  &lt;!-- Projects into card-footer-buttons slot --&gt;
+  &lt;div card-footer-buttons&gt;
+    &lt;button mat-button color="warn" (click)="handleChildAlert('Cancel pressed on projected card')"&gt;CANCEL&lt;/button&gt;
+    &lt;button mat-flat-button color="primary" (click)="handleChildAlert('Submit pressed on projected card')"&gt;CONFIRM&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/app-shared-card&gt;</code></pre>
+
+        <h3>2. Child Card Layout HTML</h3>
+        <pre ngNonBindable><code>&lt;div class="card-header"&gt;
+  &lt;h2&gt;&#123;&#123; title &#125;&#125;&lt;/h2&gt;
+  &lt;!-- Selector-based projection slot --&gt;
+  &lt;ng-content select="[card-header-actions]"&gt;&lt;/ng-content&gt;
+&lt;/div&gt;
+
+&lt;div class="card-body"&gt;
+  &lt;!-- Default catch-all projection slot --&gt;
+  &lt;ng-content&gt;&lt;/ng-content&gt;
+&lt;/div&gt;
+
+&lt;div class="card-actions"&gt;
+  &lt;!-- Selector-based projection slot --&gt;
+  &lt;ng-content select="[card-footer-buttons]"&gt;&lt;/ng-content&gt;
+&lt;/div&gt;</code></pre>
+
+        <h3>3. Child Component TS</h3>
+        <pre ngNonBindable><code>import &#123; Component, Input, ContentChild, TemplateRef &#125; from '&#64;angular/core';
+
+&#64;Component(&#123;
+  selector: 'app-shared-card',
+  standalone: true
+&#125;)
+export class SharedCardComponent &#123;
+  &#64;Input() title = 'Card Title';
+  &#64;Input() subtitle?: string;
+
+  // Querying projected template references via Template ID
+  &#64;ContentChild('customHeader') customHeaderTemplate?: TemplateRef&lt;any&gt;;
+  &#64;ContentChild('customFooter') customFooterTemplate?: TemplateRef&lt;any&gt;;
+&#125;</code></pre>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

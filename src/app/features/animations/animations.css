@@ -1,0 +1,47 @@
+.anim-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.animation-panel-box {
+  border: 1px solid;
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.anim-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.anim-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  font-size: 13.5px;
+}
+
+.state-indicator {
+  font-family: 'Consolas', monospace;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.glow-pink {
+  color: #ff4081;
+}
+
+.glow-gray {
+  color: rgba(255, 255, 255, 0.4);
+}

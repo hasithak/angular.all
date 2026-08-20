@@ -1,0 +1,154 @@
+<div class="page-container">
+  <header class="page-header">
+    <div class="page-title-box">
+      <mat-icon>filter_none</mat-icon>
+      <h1>Querying Multiple Instances (&#64;ViewChildren)</h1>
+    </div>
+    <p class="page-description">
+      Learn how to query, track, and manipulate multiple instances of child components rendered dynamically in the DOM using a reactive QueryList.
+    </p>
+  </header>
+
+  <div class="grid-2">
+    <!-- Left Column: Interactive Sandbox -->
+    <mat-card class="section-card">
+      <div class="section-title-bar">
+        <mat-icon>science</mat-icon>
+        <h2>Interactive Sandbox</h2>
+      </div>
+      <mat-card-content class="section-content">
+        <div class="theory-block">
+          <strong>How to test this demo:</strong>
+          <ol>
+            <li>Use the dynamic buttons below to add or remove instances of the child component in the DOM (min 1, max 4).</li>
+            <li>Click <strong>"Increment & Notify Parent"</strong> on individual child boxes to increase their local states.</li>
+            <li>Click the global <strong>"Reset All Children"</strong> button in the parent component to reset all states at once using <code>&#64;ViewChildren</code>.</li>
+          </ol>
+        </div>
+
+        <div class="demo-box">
+          <div class="node-controls">
+            <span>Rendered Children: <strong>{{ childList?.length || 0 }}</strong></span>
+            <div class="btn-group">
+              <button mat-icon-button color="primary" (click)="addChildNode()" title="Add Child Component">
+                <mat-icon>add_circle</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="removeChildNode()" title="Remove Child Component">
+                <mat-icon>remove_circle</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <div class="actions-row">
+            <button mat-flat-button color="primary" (click)="resetAllChildren()" class="full-width">
+              Reset All {{ childList?.length }} Children via &#64;ViewChildren
+            </button>
+          </div>
+
+          <!-- Multiple Child Components Rendering -->
+          <div class="children-list-container">
+            <div *ngFor="let item of [].constructor(childTriggerCount()); let idx = index" class="list-item-wrapper">
+              <div class="index-label">Child Index #{{ idx + 1 }}</div>
+              <app-fundamentals-child
+                [parentMessage]="'Broadcasting state to child ' + (idx + 1)"
+                (alertTriggered)="handleChildAlert($event, idx + 1)"
+              ></app-fundamentals-child>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Right Column: Code Explanation Panel -->
+    <mat-card class="section-card">
+      <div class="section-title-bar">
+        <mat-icon>code</mat-icon>
+        <h2>Code Sample & Concept Explanation</h2>
+      </div>
+      <mat-card-content class="section-content">
+        <div class="theory-block" style="background: rgba(0, 188, 212, 0.05); border-left-color: #00bcd4;">
+          <strong>Understanding QueryList:</strong>
+          <ul>
+            <li><strong>Reactive Container</strong>: <code>QueryList</code> is a reactive array-like wrapper. Every time components are added or removed from the DOM via loops (e.g. <code>*ngFor</code>), the list updates automatically.</li>
+            <li><strong>Dynamic Subscription</strong>: You can subscribe to changes in the list using <code>this.childList.changes.subscribe(...)</code>.</li>
+          </ul>
+        </div>
+
+        <h3>1. Parent HTML Template</h3>
+        <pre ngNonBindable><code>&lt;!-- Node controls to add and remove children --&gt;
+&lt;button (click)="addChildNode()"&gt;Add Child&lt;/button&gt;
+&lt;button (click)="removeChildNode()"&gt;Remove Child&lt;/button&gt;
+
+&lt;!-- Renders child components dynamically based on signal count --&gt;
+&lt;div *ngFor="let item of [].constructor(childTriggerCount()); let idx = index"&gt;
+  &lt;app-fundamentals-child
+    [parentMessage]="'Broadcasting state to child ' + (idx + 1)"
+    (alertTriggered)="handleChildAlert($event, idx + 1)"
+  &gt;&lt;/app-fundamentals-child&gt;
+&lt;/div&gt;</code></pre>
+
+        <h3>2. Parent Component TS</h3>
+        <pre ngNonBindable><code>import &#123; QueryList, ViewChildren, signal &#125; from '&#64;angular/core';
+
+// Track number of children dynamically
+public childTriggerCount = signal(2);
+
+// Querying all instances matching the component class
+&#64;ViewChildren(FundamentalsChildComponent) 
+public childList!: QueryList&lt;FundamentalsChildComponent&gt;;
+
+public addChildNode(): void &#123;
+  if (this.childTriggerCount() &lt; 4) &#123;
+    this.childTriggerCount.update(c =&gt; c + 1);
+  &#125;
+&#125;
+
+public removeChildNode(): void &#123;
+  if (this.childTriggerCount() &gt; 1) &#123;
+    this.childTriggerCount.update(c =&gt; c - 1);
+  &#125;
+&#125;
+
+// Handle child alert trigger
+public handleChildAlert(msg: string, idx: number): void &#123;
+  console.log(`Alert from child $&#123;idx&#125;: $&#123;msg&#125;`);
+&#125;
+
+// Mass mutation using foreach iteration
+public resetAllChildren(): void &#123;
+  this.childList.forEach((child, index) =&gt; &#123;
+    child.resetChildState();
+  &#125;);
+&#125;</code></pre>
+
+        <h3>3. Child HTML Template</h3>
+        <pre ngNonBindable><code>&lt;mat-card class="child-card"&gt;
+  &lt;mat-card-content&gt;
+    &lt;!-- Display received data --&gt;
+    &lt;div&gt;Received: &#123;&#123; parentMessage || 'No message' &#125;&#125;&lt;/div&gt;
+    &lt;div&gt;Local Count: &#123;&#123; counter() &#125;&#125;&lt;/div&gt;
+
+    &lt;!-- Trigger output emission --&gt;
+    &lt;button (click)="incrementCounter()"&gt;
+      Increment &amp; Notify Parent
+    &lt;/button&gt;
+  &lt;/mat-card-content&gt;
+&lt;/mat-card&gt;</code></pre>
+
+        <h3>4. Child Component TS</h3>
+        <pre ngNonBindable><code>export class ChildComponent &#123;
+  // Receiving data
+  &#64;Input() parentMessage = '';
+
+  // Defining custom event emitters
+  &#64;Output() counterChange = new EventEmitter&lt;number&gt;();
+
+  public incrementCounter(): void &#123;
+    this.counter.update(c =&gt; c + 1);
+    this.counterChange.emit(this.counter());
+  &#125;
+&#125;</code></pre>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

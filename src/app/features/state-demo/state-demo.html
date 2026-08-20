@@ -1,0 +1,225 @@
+<div class="page-container">
+  <header class="page-header">
+    <div class="page-title-box">
+      <mat-icon>analytics</mat-icon>
+      <h1>State Management Laboratory</h1>
+    </div>
+    <p class="page-description">
+      Audit unidirectional data flow architectures. Compare singleton RxJS BehaviorSubject stores featuring immutable mutations and time travel alongside Redux/NgRx log tracers.
+    </p>
+  </header>
+
+  <div class="grid-2">
+    <!-- Left Column: Interactive Demos -->
+    <div class="demos-column">
+      <!-- Part 1: SimpleStore Task Manager -->
+      <mat-card class="section-card">
+        <div class="section-title-bar">
+          <mat-icon>playlist_add</mat-icon>
+          <h2>Immutable Task Store (BehaviorSubject)</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block">
+            <strong>SimpleStore</strong> wraps a <code>BehaviorSubject</code>. All mutations return a fresh state reference (immutability), supporting historical undo/redo tracking.
+          </div>
+
+          <!-- Add Task input -->
+          <div class="todo-input-row">
+            <mat-form-field appearance="outline" class="title-input">
+              <mat-label>Task Name</mat-label>
+              <input matInput [(ngModel)]="todoInput" placeholder="Add a new task..." (keyup.enter)="addTodoItem()" />
+            </mat-form-field>
+            <button mat-flat-button color="primary" class="add-btn" (click)="addTodoItem()" [disabled]="!todoInput.trim()">
+              ADD
+            </button>
+          </div>
+
+          <!-- Time Travel buttons -->
+          <div class="time-travel-bar">
+            <button mat-stroked-button color="accent" (click)="triggerUndo()" [disabled]="undoCount() === 0">
+              <mat-icon>undo</mat-icon> UNDO ({{ undoCount() }})
+            </button>
+            <button mat-stroked-button color="accent" (click)="triggerRedo()" [disabled]="redoCount() === 0">
+              <mat-icon>redo</mat-icon> REDO ({{ redoCount() }})
+            </button>
+          </div>
+
+          <!-- Filter options -->
+          <div class="filter-row-container" *ngIf="activeFilter$ | async as currentFilter">
+            <span class="lbl">Filter Scope:</span>
+            <div class="btn-group">
+              <button mat-flat-button [color]="currentFilter === 'all' ? 'primary' : ''" (click)="changeFilter('all')">
+                ALL
+              </button>
+              <button mat-flat-button [color]="currentFilter === 'active' ? 'primary' : ''" (click)="changeFilter('active')">
+                ACTIVE
+              </button>
+              <button mat-flat-button [color]="currentFilter === 'completed' ? 'primary' : ''" (click)="changeFilter('completed')">
+                COMPLETED
+              </button>
+            </div>
+          </div>
+
+          <!-- Task List -->
+          <div class="tasks-container">
+            <div *ngIf="(filteredTodos$ | async)?.length === 0" class="empty-state">
+              No tasks matched current filter.
+            </div>
+
+            <div *ngFor="let todo of filteredTodos$ | async" class="task-item" [class.done]="todo.done">
+              <div class="task-info">
+                <button mat-icon-button (click)="toggleTodoItem(todo.id)" title="Toggle Task Status">
+                  <mat-icon color="primary">{{ todo.done ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+                </button>
+                <span class="task-text">{{ todo.text }}</span>
+              </div>
+              <button mat-icon-button color="warn" (click)="deleteTodoItem(todo.id)" title="Delete Task">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Part 2: NgRx Action Tracer -->
+      <mat-card class="section-card ngrx-card" style="margin-top: 24px;">
+        <div class="section-title-bar">
+          <mat-icon>track_changes</mat-icon>
+          <h2>Redux / NgRx Action Tracer</h2>
+          <button mat-icon-button (click)="clearStoreLogs()" title="Clear Log Tracer">
+            <mat-icon>delete_sweep</mat-icon>
+          </button>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block">
+            <strong>NgRx Flow:</strong> Actions describe events, Reducers compute state transitions, and Effects orchestrate side-effects (like APIs).
+          </div>
+
+          <div class="ngrx-controls">
+            <button mat-raised-button color="accent" (click)="triggerMockNgRxEffect()">
+              Simulate NgRx Effect (API Call)
+            </button>
+          </div>
+
+          <div class="ngrx-logs-list">
+            <div *ngIf="ngrxLogs().length === 0" class="console-empty">
+              No actions dispatched yet. Modify tasks or trigger effects above.
+            </div>
+
+            <div *ngFor="let log of ngrxLogs()" class="action-log-entry">
+              <div class="action-header-bar">
+                <div class="badge-row">
+                  <span class="badge success">ACTION</span>
+                  <span class="action-title">{{ log.actionType }}</span>
+                </div>
+                <span class="action-time">{{ log.timestamp | date:'HH:mm:ss' }}</span>
+              </div>
+              <div class="action-payload" *ngIf="log.payload && (log.payload | json) !== '{}'">
+                <strong>Payload:</strong> <code>{{ log.payload | json }}</code>
+              </div>
+              <div class="diff-visualizer">
+                <div class="state-block">
+                  <span class="lbl-state">- PREV STATE</span>
+                  <pre class="prev-state-pre"><code>{{ log.previousState }}</code></pre>
+                </div>
+                <div class="state-block">
+                  <span class="lbl-state">+ NEXT STATE</span>
+                  <pre class="next-state-pre"><code>{{ log.nextState }}</code></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Right Column: Code Explanation Panel -->
+    <div class="explanation-column">
+      <!-- Part 3: Detailed Code Explanation Panel -->
+      <mat-card class="section-card" style="height: 100%;">
+        <div class="section-title-bar">
+          <mat-icon>menu_book</mat-icon>
+          <h2>Code Sample &amp; Concept Explanation</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block" style="background: rgba(121, 134, 203, 0.05); border-left-color: #7986cb; margin-bottom: 24px;">
+            <strong>State Store Patterns:</strong>
+            <ul>
+              <li><strong>Single Source of Truth</strong>: Wrapping state mutations inside a single store class built on a <code>BehaviorSubject</code> ensures reliable unidirectional flows.</li>
+              <li><strong>Immutability</strong>: Always spread previous properties (e.g. <code>&#123; ...state, property: newValue &#125;</code>) rather than editing fields directly, preventing accidental side-effects and enabling history auditing.</li>
+              <li><strong>Time Travel</strong>: Keeping histories in undo/redo arrays allows components to jump to previous snapshots instantly.</li>
+            </ul>
+          </div>
+
+          <div class="explanation-sections">
+            <div class="explanation-block">
+              <h3>1. Immutable State Store (BehaviorSubject)</h3>
+              <p class="page-description">Subscribing via async pipe in HTML templates, followed by TS state spread mutations.</p>
+              <pre ngNonBindable><code>&lt;!-- HTML Template Subscription --&gt;
+&lt;div *ngFor="let todo of filteredTodos$ | async"&gt;
+  &lt;span&gt;&#123;&#123; todo.text &#125;&#125;&lt;/span&gt;
+&lt;/form&gt;
+
+&lt;!-- TypeScript Store Implementation --&gt;
+class SimpleStore &#123;
+  private readonly stateSubject = new BehaviorSubject&lt;AppState&gt;(initialAppState);
+  public readonly state$ = this.stateSubject.asObservable();
+
+  public select&lt;K&gt;(mapFn: (state: AppState) =&gt; K): Observable&lt;K&gt; &#123;
+    return this.state$.pipe(map(mapFn));
+  &#125;
+
+  public setState(reducer: (state: AppState) =&gt; AppState): void &#123;
+    const currentState = this.stateSubject.getValue();
+    const nextState = reducer(currentState);
+
+    this.undoStack.push(currentState);
+    this.redoStack = []; // Clear redo list
+    this.stateSubject.next(nextState);
+  &#125;
+&#125;</code></pre>
+            </div>
+
+            <div class="explanation-block" style="margin-top: 32px;">
+              <h3>2. Undo/Redo Stacks &amp; Time Travel</h3>
+              <p class="page-description">Binding action buttons in templates, followed by Stack operations in TS.</p>
+              <pre ngNonBindable><code>&lt;!-- HTML Template Controls --&gt;
+&lt;button (click)="triggerUndo()" [disabled]="undoCount() === 0"&gt;
+  UNDO (&#123;&#123; undoCount() &#125;&#125;)
+&lt;/button&gt;
+&lt;button (click)="triggerRedo()" [disabled]="redoCount() === 0"&gt;
+  REDO (&#123;&#123; redoCount() &#125;&#125;)
+&lt;/button&gt;
+
+&lt;!-- TypeScript Stack Operations --&gt;
+private undoStack: AppState[] = [];
+private redoStack: AppState[] = [];
+
+public undo(): boolean &#123;
+  if (this.undoStack.length === 0) return false;
+
+  const previousState = this.undoStack.pop()!;
+  const currentState = this.stateSubject.getValue();
+  this.redoStack.push(currentState);
+  
+  this.stateSubject.next(previousState);
+  return true;
+&#125;
+
+public redo(): boolean &#123;
+  if (this.redoStack.length === 0) return false;
+
+  const nextState = this.redoStack.pop()!;
+  const currentState = this.stateSubject.getValue();
+  this.undoStack.push(currentState);
+
+  this.stateSubject.next(nextState);
+  return true;
+&#125;</code></pre>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

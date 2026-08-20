@@ -1,0 +1,165 @@
+.page-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.http-loader {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  border-radius: 4px 4px 0 0;
+}
+
+/* Input form row */
+.todo-input-form {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.title-input {
+  flex: 1;
+  margin-bottom: 0 !important;
+}
+
+.add-btn {
+  height: 54px !important;
+}
+
+/* Todos list container */
+.todos-table-container {
+  background: rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  min-height: 250px;
+  overflow: hidden;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 250px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.empty-state mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 12px;
+}
+
+.empty-state p {
+  margin: 0 0 16px 0;
+  font-size: 13px;
+}
+
+/* Todo Row item styling */
+.todo-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.todo-row-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background-color 0.2s ease;
+}
+
+.todo-row-item:last-child {
+  border-bottom: none;
+}
+
+.todo-row-item:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.todo-main-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.status-chk-btn {
+  padding: 0 !important;
+  width: 36px !important;
+  height: 36px !important;
+}
+
+.todo-title-text {
+  font-size: 13.5px;
+  line-height: 1.4;
+  transition: color 0.2s ease, text-decoration 0.2s ease;
+}
+
+/* Strike-through completed items */
+.todo-row-item.completed .todo-title-text {
+  text-decoration: line-through;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.todo-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.todo-id-tag {
+  font-family: 'Consolas', monospace;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.35);
+  padding: 2px 6px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 4px;
+}
+
+/* Error logs display panel */
+.error-log-display {
+  margin-top: 20px;
+  background: rgba(244, 67, 54, 0.05);
+  border: 1px solid rgba(244, 67, 54, 0.15);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.error-log-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #e57373;
+  font-size: 13.5px;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.error-log-header mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.error-log-body {
+  margin: 0 !important;
+  padding: 12px !important;
+  background: #08080f;
+  border-color: rgba(244, 67, 54, 0.2);
+  color: #ff8a80;
+}
+
+.hint-caption {
+  font-size: 10.5px;
+  color: rgba(255, 255, 255, 0.45);
+  line-height: 1.4;
+  margin-top: 10px;
+}

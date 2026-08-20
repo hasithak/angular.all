@@ -1,0 +1,311 @@
+<div class="page-container">
+  <header class="page-header">
+    <div class="page-title-box">
+      <mat-icon>waves</mat-icon>
+      <h1>RxJS Streams Playground</h1>
+    </div>
+    <p class="page-description">
+      Interact with asynchronous event flows. Compare flattening map behaviors, subject buffer scopes, combination triggers, and input debouncing.
+    </p>
+  </header>
+
+  <div class="grid-2">
+    <!-- Left Column: Interactive Demos -->
+    <div class="demos-column">
+      <!-- Part 1: Interactive Operators Control Deck -->
+      <mat-tab-group class="playground-tabs section-card">
+        <!-- Tab 1: Map Operators -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon class="tab-icon">call_split</mat-icon>
+            Flattening Maps
+          </ng-template>
+          <div class="tab-padding">
+            <div class="theory-block">
+              <strong>Flattening operators</strong> manage nested Observables. Click the trigger button multiple times quickly to observe execution order differences.
+            </div>
+
+            <div class="operators-explanation-grid">
+              <div class="op-explain switch">
+                <strong>switchMap</strong>
+                <span class="desc">Cancels previous pending requests. Renders only the latest click.</span>
+              </div>
+              <div class="op-explain merge">
+                <strong>mergeMap</strong>
+                <span class="desc">Fires all requests in parallel. All completions render.</span>
+              </div>
+              <div class="op-explain concat">
+                <strong>concatMap</strong>
+                <span class="desc">Queues requests sequentially. Executes one after another completes.</span>
+              </div>
+              <div class="op-explain exhaust">
+                <strong>exhaustMap</strong>
+                <span class="desc">Ignores new clicks until active requests finish.</span>
+              </div>
+            </div>
+
+            <div class="trigger-box">
+              <button mat-flat-button class="btn-primary-gradient big-trigger-btn" (click)="triggerMapEvent()">
+                <mat-icon>flash_on</mat-icon> EMIT TRIGGER SIGNAL
+              </button>
+              <div class="hint">Click 3-4 times in under 2 seconds to see concurrency control!</div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Tab 2: Subject Types -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon class="tab-icon">hub</mat-icon>
+            Subject Explorer
+          </ng-template>
+          <div class="tab-padding">
+            <div class="theory-block">
+              Connect observers <strong>late</strong> to inspect the caching differences between Subject profiles.
+            </div>
+
+            <!-- Subject emitter -->
+            <div class="subject-emitter-row">
+              <mat-form-field appearance="outline" class="select-field">
+                <mat-label>Subject Input Value</mat-label>
+                <input matInput #subVal placeholder="Type emission data..." (keyup.enter)="emitValueToSubjects(subVal.value); subVal.value=''" />
+              </mat-form-field>
+              <button mat-flat-button color="accent" class="emit-btn" (click)="emitValueToSubjects(subVal.value); subVal.value=''">
+                EMIT TO ALL
+              </button>
+            </div>
+
+            <!-- Three Subjects observers grid -->
+            <div class="subjects-audit-grid">
+              <!-- Standard Subject Card -->
+              <mat-card class="sub-audit-card">
+                <div class="sub-audit-header">
+                  <strong>Subject</strong>
+                  <span class="desc">No buffer/state. Delivers only future events.</span>
+                </div>
+                <mat-card-actions class="card-footer">
+                  <button mat-flat-button [color]="isSubscribedToStandard() ? 'warn' : 'primary'" class="sub-btn" (click)="toggleSubStandard()">
+                    {{ isSubscribedToStandard() ? 'UNSUBSCRIBE' : 'SUBSCRIBE LATE' }}
+                  </button>
+                </mat-card-actions>
+              </mat-card>
+
+              <!-- Behavior Subject Card -->
+              <mat-card class="sub-audit-card">
+                <div class="sub-audit-header">
+                  <strong>BehaviorSubject</strong>
+                  <span class="desc">Requires default value. Replays the latest item instantly.</span>
+                </div>
+                <mat-card-actions class="card-footer">
+                  <button mat-flat-button [color]="isSubscribedToBehavior() ? 'warn' : 'primary'" class="sub-btn" (click)="toggleSubBehavior()">
+                    {{ isSubscribedToBehavior() ? 'UNSUBSCRIBE' : 'SUBSCRIBE LATE' }}
+                  </button>
+                </mat-card-actions>
+              </mat-card>
+
+              <!-- Replay Subject Card -->
+              <mat-card class="sub-audit-card">
+                <div class="sub-audit-header">
+                  <strong>ReplaySubject</strong>
+                  <span class="desc">Buffers last N items. Replays historical buffer to new subs.</span>
+                </div>
+                <mat-card-actions class="card-footer">
+                  <button mat-flat-button [color]="isSubscribedToReplay() ? 'warn' : 'primary'" class="sub-btn" (click)="toggleSubReplay()">
+                    {{ isSubscribedToReplay() ? 'UNSUBSCRIBE' : 'SUBSCRIBE LATE' }}
+                  </button>
+                </mat-card-actions>
+              </mat-card>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Tab 3: Combines & Timers -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon class="tab-icon">join_inner</mat-icon>
+            Combines &amp; Filters
+          </ng-template>
+          <div class="tab-padding">
+            <div class="combination-playground">
+              <h3>Combination operators (combineLatest vs forkJoin)</h3>
+              <div class="theory-block">
+                <strong>combineLatest</strong> emits when any input changes, compiling their latest states.
+                <strong>forkJoin</strong> waits for all streams to complete before rendering final payloads.
+              </div>
+
+              <div class="actions-row">
+                <button mat-stroked-button color="primary" (click)="triggerStreamA()">
+                  Emit Stream A
+                </button>
+                <button mat-stroked-button color="accent" (click)="triggerStreamB()">
+                  Emit Stream B
+                </button>
+                <button mat-flat-button color="warn" (click)="executeForkJoin()">
+                  Trigger forkJoin Simulation
+                </button>
+              </div>
+            </div>
+
+            <mat-divider class="divider-spacing"></mat-divider>
+
+            <div class="debouncing-playground">
+              <h3>Filters: debounceTime &amp; distinctUntilChanged</h3>
+              <div class="theory-block">
+                Emits values only after 400ms of silence, filtering out duplicate inputs. Excellent for search bar query boxes.
+              </div>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Debounce Search box</mat-label>
+                <input matInput (input)="handleDebounceInputChange($event)" placeholder="Type fast, watch the console logs..." />
+              </mat-form-field>
+
+              <div class="debounce-output">
+                <span>Debounced Output Result: </span>
+                <strong class="out-val">{{ debouncedOutput() || '(Waiting for typing silence...)' }}</strong>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+
+      <!-- Part 2: Live Terminal console log -->
+      <div class="stream-console" style="margin-top: 24px;">
+        <div class="console-header">
+          <div class="header-main">
+            <mat-icon class="console-icon">terminal</mat-icon>
+            <span>Live Streams Console Output</span>
+          </div>
+          <button mat-icon-button (click)="clearLogs()" title="Clear Console">
+            <mat-icon>delete_sweep</mat-icon>
+          </button>
+        </div>
+
+        <div class="console-body">
+          <div *ngIf="streamLogs().length === 0" class="console-empty">
+            <p>Console is silent. Trigger events in the left deck to stream logs...</p>
+          </div>
+
+          <div *ngFor="let log of streamLogs()" class="console-row" [ngClass]="log.type">
+            <span class="log-time">{{ log.timestamp | date:'HH:mm:ss.SSS' }}</span>
+            <span class="log-src">[{{ log.source }}]</span>
+            <span class="log-val">{{ log.value }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Code Explanation Panel -->
+    <div class="explanation-column">
+      <!-- Part 3: Detailed Code Explanation Panel -->
+      <mat-card class="section-card" style="height: 100%;">
+        <div class="section-title-bar">
+          <mat-icon>menu_book</mat-icon>
+          <h2>Code Sample &amp; Concept Explanation</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block" style="background: rgba(121, 134, 203, 0.05); border-left-color: #7986cb; margin-bottom: 24px;">
+            <strong>RxJS Reactive Extensions:</strong>
+            <ul>
+              <li><strong>Flattening Maps</strong>: Resolve nested observables. Use <code>switchMap</code> to discard old requests, <code>mergeMap</code> for parallel executions, <code>concatMap</code> for queues, and <code>exhaustMap</code> to lock out new inputs.</li>
+              <li><strong>Subjects</strong>: Standard <code>Subject</code> passes events only to active subscribers. <code>BehaviorSubject</code> caches the latest value for new subscribers, and <code>ReplaySubject</code> stores a buffer history.</li>
+              <li><strong>Debouncing</strong>: Delays event propagation until input stops changing, reducing backend load during keystrokes.</li>
+            </ul>
+          </div>
+
+          <div class="explanation-sections">
+            <div class="explanation-block">
+              <h3>1. Flattening Maps (switchMap vs mergeMap)</h3>
+              <p class="page-description">HTML trigger buttons, followed by TS mapping operations handling concurrency.</p>
+              <pre ngNonBindable><code>&lt;!-- HTML Template Usage --&gt;
+&lt;button (click)="triggerMapEvent()"&gt;Emit trigger signal&lt;/button&gt;
+
+&lt;!-- TypeScript Component Controller --&gt;
+private readonly mapTrigger$ = new Subject&lt;number&gt;();
+
+this.mapTrigger$.pipe(
+  // switchMap cancels prior pending calls on new click
+  switchMap(n =&gt; simulatedHttpCall(n)),
+  
+  // mergeMap triggers concurrent parallel calls
+  // mergeMap(n =&gt; simulatedHttpCall(n)),
+  
+  // concatMap executes in a sequential queue
+  // concatMap(n =&gt; simulatedHttpCall(n)),
+  
+  // exhaustMap ignores new emissions until active finishes
+  // exhaustMap(n =&gt; simulatedHttpCall(n))
+).subscribe(result =&gt; console.log(result));</code></pre>
+            </div>
+
+            <div class="explanation-block" style="margin-top: 32px;">
+              <h3>2. Subject Buffering Profiles</h3>
+              <p class="page-description">HTML display nodes, followed by TS declarations of Subject types.</p>
+              <pre ngNonBindable><code>&lt;!-- HTML Template Usage --&gt;
+&lt;button (click)="toggleSubStandard()"&gt;Subscribe standard&lt;/button&gt;
+&lt;button (click)="toggleSubBehavior()"&gt;Subscribe behavior&lt;/button&gt;
+&lt;button (click)="toggleSubReplay()"&gt;Subscribe replay&lt;/button&gt;
+
+&lt;!-- TypeScript Component Controller --&gt;
+// 1. Standard: no cache, only future emissions
+public standardSubject = new Subject&lt;string&gt;();
+
+// 2. Behavior: returns current state (requires default)
+public behaviorSubject = new BehaviorSubject&lt;string&gt;('Initial Value');
+
+// 3. Replay: buffers last N items (e.g. 3)
+public replaySubject = new ReplaySubject&lt;string&gt;(3);
+
+// Emitting data to all subjects
+this.standardSubject.next(val);
+this.behaviorSubject.next(val);
+this.replaySubject.next(val);</code></pre>
+            </div>
+
+            <div class="explanation-block" style="margin-top: 32px;">
+              <h3>3. Debounce &amp; Distinct Input Filtering</h3>
+              <p class="page-description">HTML search input element, followed by TS debouncing query stream setup.</p>
+              <pre ngNonBindable><code>&lt;!-- HTML Template Usage --&gt;
+&lt;input (input)="handleDebounceInputChange($event)" placeholder="Search..." /&gt;
+&lt;span&gt;Result: &#123;&#123; debouncedOutput() &#125;&#125;&lt;/span&gt;
+
+&lt;!-- TypeScript Component Controller --&gt;
+public readonly debounceInput$ = new Subject&lt;string&gt;();
+public debouncedOutput = signal('');
+
+this.debounceInput$.pipe(
+  // Wait for 400ms of typing silence
+  debounceTime(400),
+  
+  // Only propagate if search query changed
+  distinctUntilChanged()
+).subscribe(val =&gt; this.debouncedOutput.set(val));
+
+public handleDebounceInputChange(event: Event): void &#123;
+  const value = (event.target as HTMLInputElement).value;
+  this.debounceInput$.next(value);
+&#125;</code></pre>
+            </div>
+
+            <div class="explanation-block" style="margin-top: 32px;">
+              <h3>4. Combination Streams (combineLatest vs forkJoin)</h3>
+              <p class="page-description">HTML simulation action buttons, followed by TS stream joining setups.</p>
+              <pre ngNonBindable><code>&lt;!-- HTML Template Usage --&gt;
+&lt;button (click)="executeForkJoin()"&gt;Trigger forkJoin Simulation&lt;/button&gt;
+
+&lt;!-- TypeScript Component Controller --&gt;
+// Emit latest state from both streams A and B on any update
+combineLatest([this.streamA$, this.streamB$]).subscribe(([a, b]) =&gt; &#123;
+  console.log(`Emitted: A=$&#123;a&#125;, B=$&#123;b&#125;`);
+&#125;);
+
+// Wait for all streams to complete before resolving
+forkJoin([reqA, reqB]).subscribe(([resA, resB]) =&gt; &#123;
+  console.log(resA, resB);
+&#125;);</code></pre>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

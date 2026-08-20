@@ -1,0 +1,164 @@
+.page-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.lifecycle-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+/* Controller box layouts */
+.controls-box {
+  background: rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.input-mutation-row {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.input-mutation-row mat-form-field {
+  width: 100%;
+  margin-bottom: 0 !important;
+}
+
+.btn-row {
+  display: flex;
+  gap: 8px;
+}
+
+/* Mounting Stage panel */
+.mounting-stage {
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.stage-label {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.unmounted-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: rgba(255, 255, 255, 0.35);
+  gap: 12px;
+}
+
+.unmounted-placeholder mat-icon {
+  font-size: 36px;
+  width: 36px;
+  height: 36px;
+}
+
+.unmounted-placeholder span {
+  font-size: 12.5px;
+  text-align: center;
+}
+
+/* Chronological timeline */
+.log-card {
+  border-color: rgba(233, 30, 99, 0.15) !important;
+}
+
+.logs-timeline {
+  background: #08080f;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 16px;
+  height: 480px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 13px;
+  text-align: center;
+}
+
+/* Log rows and Badges */
+.log-entry-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  font-family: 'Consolas', monospace;
+  font-size: 11px;
+}
+
+.log-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.order-badge {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.log-details-text {
+  color: rgba(255, 255, 255, 0.75);
+  padding-left: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.time-stamp {
+  color: rgba(255, 255, 255, 0.25);
+  font-size: 10px;
+}
+
+/* Badge colors for hooks */
+.badge {
+  font-size: 8.5px;
+  font-weight: 600;
+  padding: 1px 5px;
+  border-radius: 3px;
+  text-transform: uppercase;
+}
+
+.badge.constructor { background: rgba(255, 255, 255, 0.1); color: #ffffff; }
+.badge.ngOnInit { background: rgba(76, 175, 80, 0.2); color: #81c784; }
+.badge.ngOnChanges { background: rgba(63, 81, 181, 0.2); color: #7986cb; }
+.badge.ngOnDestroy { background: rgba(244, 67, 54, 0.2); color: #e57373; }
+
+/* Checked & checked hooks are styled neutral because they run a lot */
+.badge.ngDoCheck { background: rgba(0, 188, 212, 0.1); color: #80deea; opacity: 0.8; }
+.badge.ngAfterContentInit { background: rgba(156, 39, 176, 0.2); color: #ce93d8; }
+.badge.ngAfterContentChecked { background: rgba(156, 39, 176, 0.1); color: #ce93d8; opacity: 0.8; }
+.badge.ngAfterViewInit { background: rgba(255, 152, 0, 0.2); color: #ffe082; }
+.badge.ngAfterViewChecked { background: rgba(255, 152, 0, 0.1); color: #ffe082; opacity: 0.8; }
+
+@media (max-width: 960px) {
+  .lifecycle-layout {
+    grid-template-columns: 1fr;
+  }
+}

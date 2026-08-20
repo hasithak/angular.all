@@ -1,0 +1,373 @@
+<div class="page-container">
+  <header class="page-header">
+    <div class="page-title-box">
+      <mat-icon>filter_alt</mat-icon>
+      <h1>Directives & Pipes Laboratory</h1>
+    </div>
+    <p class="page-description">
+      Control the template DOM dynamically and format raw data views using built-in, custom attribute, and custom structural decorators alongside standard and async data pipes.
+    </p>
+  </header>
+
+  <div class="grid-2">
+    <!-- Left Column: Interactive Demos -->
+    <div class="demos-column">
+      <!-- Part 1: Built-in Directives -->
+      <mat-card class="section-card">
+        <div class="section-title-bar">
+          <mat-icon>widgets</mat-icon>
+          <h2>Built-in Directives</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block">
+            Explore built-in Angular directives: structural (<code>*ngIf</code>, <code>*ngFor</code>, <code>[ngSwitch]</code>) and attribute (<code>[ngClass]</code>, <code>[ngStyle]</code>).
+          </div>
+
+          <div class="demo-box">
+            <!-- 1. ngIf -->
+            <div class="directive-demo-block">
+              <div class="demo-control-row">
+                <mat-slide-toggle [checked]="showSection()" (change)="showSection.set($event.checked)">
+                  Toggle Content Visibility (*ngIf)
+                </mat-slide-toggle>
+              </div>
+              <div *ngIf="showSection()" class="animated-box primary-bg">
+                Visible because <code>*ngIf="true"</code>
+              </div>
+            </div>
+
+            <!-- 2. ngSwitch -->
+            <div class="directive-demo-block">
+              <div class="control-row">
+                <label>Select Profile Role (ngSwitch):</label>
+                <mat-radio-group [(ngModel)]="userRole" class="radio-group">
+                  <mat-radio-button value="admin">Admin</mat-radio-button>
+                  <mat-radio-button value="moderator">Moderator</mat-radio-button>
+                  <mat-radio-button value="guest">Guest</mat-radio-button>
+                </mat-radio-group>
+              </div>
+              <div [ngSwitch]="userRole()" class="switch-box">
+                <div *ngSwitchCase="'admin'" class="alert-box green">
+                  <mat-icon>security</mat-icon> [Admin View] Access to security vaults granted.
+                </div>
+                <div *ngSwitchCase="'moderator'" class="alert-box orange">
+                  <mat-icon>edit</mat-icon> [Moderator View] Edit content permissions active.
+                </div>
+                <div *ngSwitchDefault class="alert-box gray">
+                  <mat-icon>info</mat-icon> [Guest View] Read-only environment overview.
+                </div>
+              </div>
+            </div>
+
+            <!-- 3. ngClass & ngStyle -->
+            <div class="directive-demo-block">
+              <div class="demo-control-row">
+                <mat-slide-toggle [checked]="isStyledActive()" (change)="isStyledActive.set($event.checked)">
+                  Activate Glow Styling (ngClass)
+                </mat-slide-toggle>
+              </div>
+
+              <!-- ngClass binding -->
+              <div
+                class="target-styled-box"
+                [ngClass]="{ 'active-glow-class': isStyledActive() }"
+                [ngStyle]="{ 'font-size.px': fontSizePx(), 'color': textColorCode() }"
+              >
+                Custom Styled Text Content
+              </div>
+
+              <!-- ngStyle controls -->
+              <div class="font-controls">
+                <button mat-icon-button (click)="fontSizePx.set(fontSizePx() - 2)" title="Decrease Size">
+                  <mat-icon>remove</mat-icon>
+                </button>
+                <span>Font Size: {{ fontSizePx() }}px (ngStyle)</span>
+                <button mat-icon-button (click)="fontSizePx.set(fontSizePx() + 2)" title="Increase Size">
+                  <mat-icon>add</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Part 2: Custom Directives -->
+      <mat-card class="section-card" style="margin-top: 24px;">
+        <div class="section-title-bar">
+          <mat-icon>code</mat-icon>
+          <h2>Custom Directives Lab</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block">
+            <strong>Highlight (Attribute)</strong> listens to mouse movements to alter element colors.
+            <strong>Unless (Structural)</strong> renders content conditionally only when the condition is false.
+          </div>
+
+          <div class="demo-box">
+            <!-- Custom Attribute Directive -->
+            <div class="directive-demo-block">
+              <h3>Custom Attribute (appHighlight)</h3>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Choose Custom Hover Highlight Color</mat-label>
+                <mat-select [value]="customHighlightColor()" (selectionChange)="customHighlightColor.set($event.value)">
+                  <mat-option value="rgba(63, 81, 181, 0.25)">Indigo Translucent</mat-option>
+                  <mat-option value="rgba(233, 30, 99, 0.25)">Rose Translucent</mat-option>
+                  <mat-option value="rgba(76, 175, 80, 0.25)">Emerald Translucent</mat-option>
+                  <mat-option value="rgba(255, 152, 0, 0.25)">Orange Translucent</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <div [appHighlight]="customHighlightColor()" class="highlight-target-area">
+                Hover your cursor over this card area to activate the <code>HighlightDirective</code> background transition!
+              </div>
+            </div>
+
+            <!-- Custom Structural Directive -->
+            <div class="directive-demo-block">
+              <h3>Custom Structural (*appUnless)</h3>
+              <div class="demo-control-row">
+                <mat-slide-toggle [checked]="hideUnlessCondition()" (change)="toggleUnlessCondition()">
+                  Set Unless Condition to: <strong>{{ hideUnlessCondition() }}</strong>
+                </mat-slide-toggle>
+              </div>
+
+              <!-- Custom Structural Directive rendering inverted ngIf -->
+              <div *appUnless="hideUnlessCondition()" class="alert-box green">
+                This node is rendered because <code>*appUnless="false"</code> is falsy!
+              </div>
+              <div *ngIf="hideUnlessCondition()" class="alert-box gray">
+                Condition is <code>true</code>: UnlessDirective content is cleared.
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Part 3: Pipes and Formatting -->
+      <mat-card class="section-card" style="margin-top: 24px;">
+        <div class="section-title-bar">
+          <mat-icon>filter_list_alt</mat-icon>
+          <h2>Data Transformation Pipes (Built-in & Custom Sort/Truncate)</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block">
+            Format outputs directly inside HTML templates.
+            Demonstrating: <strong>Date, Currency, Percent, Async</strong> (built-in) and <strong>Truncate, Sort</strong> (custom).
+          </div>
+
+          <div class="sort-selector-row">
+            <!-- Live Async Pipe clock representation -->
+            <div class="async-clock">
+              <mat-icon>schedule</mat-icon>
+              <span>Async Pipe Clock Stream: </span>
+              <strong>{{ asyncTimeStream$ | async | date:'mediumTime' }}</strong>
+            </div>
+
+            <div class="sort-controls-box">
+              <mat-form-field appearance="outline" class="select-field">
+                <mat-label>Sort Products By</mat-label>
+                <mat-select [value]="sortByProperty()" (selectionChange)="sortByProperty.set($event.value)">
+                  <mat-option value="price">Price</mat-option>
+                  <mat-option value="name">Product Name</mat-option>
+                  <mat-option value="releaseDate">Release Date</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="select-field">
+                <mat-label>Direction</mat-label>
+                <mat-select [value]="sortOrderDirection()" (selectionChange)="sortOrderDirection.set($event.value)">
+                  <mat-option value="asc">Ascending</mat-option>
+                  <mat-option value="desc">Descending</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <!-- Products Grid showcasing multiple pipes -->
+          <div class="products-grid">
+            <!-- Loop sorted products using custom Sort Pipe -->
+            <mat-card
+              *ngFor="let prod of products() | sort:sortByProperty():sortOrderDirection()"
+              class="product-item-card"
+            >
+              <mat-card-header>
+                <mat-card-title class="product-title">{{ prod.name }}</mat-card-title>
+                <mat-card-subtitle>Released: {{ prod.releaseDate | date:'mediumDate' }}</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content class="product-body">
+                <!-- Custom Truncate Pipe -->
+                <p class="product-desc" [title]="prod.description">
+                  {{ prod.description | truncate:45 }}
+                </p>
+                <div class="pricing-metrics">
+                  <div class="pricing-row">
+                    <span class="price-lbl">Standard Price:</span>
+                    <!-- Currency Pipe -->
+                    <span class="price-val">{{ prod.price | currency:'USD' }}</span>
+                  </div>
+                  <div class="pricing-row">
+                    <span class="price-lbl">Discount Offer:</span>
+                    <!-- Percent Pipe -->
+                    <span class="price-val discount">{{ prod.discount | percent }}</span>
+                  </div>
+                  <div class="pricing-row final">
+                    <span class="price-lbl">Final Price:</span>
+                    <span class="price-val final">{{ (prod.price * (1 - prod.discount)) | currency:'USD' }}</span>
+                  </div>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Right Column: Code Explanation Panel -->
+    <div class="explanation-column">
+      <!-- Part 4: Detailed Code Explanation Panel -->
+      <mat-card class="section-card" style="height: 100%;">
+        <div class="section-title-bar">
+          <mat-icon>menu_book</mat-icon>
+          <h2>Code Sample &amp; Concept Explanation</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block" style="background: rgba(121, 134, 203, 0.05); border-left-color: #7986cb; margin-bottom: 24px;">
+            <strong>Directives and Pipes Extension Points:</strong>
+            <ul>
+              <li><strong>Attribute Directives</strong>: Modify the behavior, appearance, or layout of existing DOM nodes. Use <code>&#64;HostListener</code> to attach event handlers.</li>
+              <li><strong>Structural Directives</strong>: Modify the DOM layout by adding or removing entire HTML elements dynamically. They require <code>TemplateRef</code> (what to render) and <code>ViewContainerRef</code> (where to render).</li>
+              <li><strong>Custom Pipes</strong>: Pure functions that transform raw values into formatted displays. Set <code>pure: true</code> (default) so that transformations only run when inputs change.</li>
+            </ul>
+          </div>
+
+          <div class="explanation-sections">
+            <div class="explanation-block">
+              <h3>1. Highlight Attribute Directive</h3>
+              <p class="page-description">Using the attribute directive in templates, followed by its TS HostListener and HostBinding implementation.</p>
+              <pre ngNonBindable><code>&lt;!-- HTML Template Usage --&gt;
+&lt;div [appHighlight]="customHighlightColor()" class="highlight-target-area"&gt;
+  Hover your cursor over this card area!
+&lt;/div&gt;
+
+&lt;!-- TypeScript Implementation --&gt;
+import &#123; Directive, ElementRef, HostBinding, HostListener, Input, Renderer2 &#125; from '&#64;angular/core';
+
+&#64;Directive(&#123;
+  selector: '[appHighlight]',
+  standalone: true
+&#125;)
+export class HighlightDirective &#123;
+  &#64;Input() defaultColor = 'transparent';
+  &#64;Input('appHighlight') highlightColor = 'rgba(63, 81, 181, 0.15)';
+
+  &#64;HostBinding('style.backgroundColor') backgroundColor!: string;
+  &#64;HostBinding('style.transition') transition = 'background-color 0.3s ease, transform 0.2s ease';
+  &#64;HostBinding('style.borderRadius') borderRadius = '8px';
+
+  constructor(
+    private el: ElementRef,
+    private renderer: Renderer2
+  ) &#123;&#125;
+
+  &#64;HostListener('mouseenter') 
+  public onMouseEnter(): void &#123;
+    this.backgroundColor = this.highlightColor;
+    this.renderer.setStyle(this.el.nativeElement, 'transform', 'translateY(-2px)');
+  &#125;
+
+  &#64;HostListener('mouseleave') 
+  public onMouseLeave(): void &#123;
+    this.backgroundColor = this.defaultColor;
+    this.renderer.setStyle(this.el.nativeElement, 'transform', 'translateY(0)');
+  &#125;
+&#125;</code></pre>
+            </div>
+
+            <div class="explanation-block" style="margin-top: 32px;">
+              <h3>2. Custom Structural Directive</h3>
+              <p class="page-description">Using the structural unless directive in templates, followed by its TS ViewContainerRef implementation.</p>
+              <pre ngNonBindable><code>&lt;!-- HTML Template Usage --&gt;
+&lt;div *appUnless="hideUnlessCondition()" class="alert-box green"&gt;
+  This node is rendered because *appUnless is falsy!
+&lt;/div&gt;
+
+&lt;!-- TypeScript Implementation --&gt;
+import &#123; Directive, Input, TemplateRef, ViewContainerRef &#125; from '&#64;angular/core';
+
+&#64;Directive(&#123;
+  selector: '[appUnless]',
+  standalone: true
+&#125;)
+export class UnlessDirective &#123;
+  private hasView = false;
+
+  constructor(
+    private templateRef: TemplateRef&lt;any&gt;,
+    private viewContainer: ViewContainerRef
+  ) &#123;&#125;
+
+  &#64;Input() set appUnless(condition: boolean) &#123;
+    if (!condition &amp;&amp; !this.hasView) &#123;
+      this.viewContainer.createEmbeddedView(this.templateRef);
+      this.hasView = true;
+    &#125; else if (condition &amp;&amp; this.hasView) &#123;
+      this.viewContainer.clear();
+      this.hasView = false;
+    &#125;
+  &#125;
+&#125;</code></pre>
+            </div>
+
+            <div class="explanation-block" style="margin-top: 32px;">
+              <h3>3. Custom Sorting &amp; Formatting Pipes</h3>
+              <p class="page-description">Applying Sort and Truncate transforms in templates, followed by their PipeTransform implementations.</p>
+              <pre ngNonBindable><code>&lt;!-- HTML Template Usage --&gt;
+&lt;mat-card *ngFor="let prod of products() | sort:sortByProperty():sortOrderDirection()"&gt;
+  &lt;p&gt;&#123;&#123; prod.description | truncate:45 &#125;&#125;&lt;/p&gt;
+  &lt;span&gt;&#123;&#123; prod.price | currency:'USD' &#125;&#125;&lt;/span&gt;
+  &lt;span&gt;&#123;&#123; prod.discount | percent &#125;&#125;&lt;/span&gt;
+&lt;/mat-card&gt;
+
+&lt;!-- TypeScript Sort Pipe Implementation --&gt;
+&#64;Pipe(&#123; name: 'sort', standalone: true, pure: true &#125;)
+export class SortPipe implements PipeTransform &#123;
+  public transform&lt;T&gt;(array: T[] | null, property: keyof T, direction: 'asc' | 'desc' = 'asc'): T[] &#123;
+    if (!array || !Array.isArray(array)) return [];
+    const sorted = [...array].sort((a, b) =&gt; &#123;
+      const valA = a[property];
+      const valB = b[property];
+      if (valA === valB) return 0;
+      if (typeof valA === 'string' && typeof valB === 'string') return valA.localeCompare(valB);
+      return (valA as any) &gt; (valB as any) ? 1 : -1;
+    &#125;);
+    return direction === 'desc' ? sorted.reverse() : sorted;
+  &#125;
+&#125;
+
+&lt;!-- TypeScript Truncate Pipe Implementation --&gt;
+&#64;Pipe(&#123; name: 'truncate', standalone: true &#125;)
+export class TruncatePipe implements PipeTransform &#123;
+  public transform(value: string | null | undefined, limit = 20, trail = '...'): string &#123;
+    if (!value) return '';
+    return value.length &lt;= limit ? value : value.substring(0, limit) + trail;
+  &#125;
+&#125;</code></pre>
+            </div>
+
+            <div class="explanation-block" style="margin-top: 32px;">
+              <h3>4. Async Pipe for Reactive Streams</h3>
+              <p class="page-description">Subscribing to streams in templates, followed by the Component observable declaration.</p>
+              <pre ngNonBindable><code>&lt;!-- HTML Template Usage --&gt;
+&lt;strong&gt;&#123;&#123; asyncTimeStream$ | async | date:'mediumTime' &#125;&#125;&lt;/strong&gt;
+
+&lt;!-- TypeScript Component Stream --&gt;
+public asyncTimeStream$ = interval(1000).pipe(
+  map(() =&gt; new Date())
+);</code></pre>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

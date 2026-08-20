@@ -1,0 +1,189 @@
+<div class="dashboard-container">
+  <!-- Welcome Banner -->
+  <header class="welcome-banner">
+    <div class="welcome-text">
+      <h1>Welcome to..., <span class="highlight-text">Angular 22</span></h1>
+    </div>
+    <div class="banner-meta">
+      <span class="version-tag">Angular v19.x Stable</span>
+      <span class="style-tag">2026 Concise Style Guide</span>
+    </div>
+  </header>
+
+  <!-- Metrics Grid -->
+  <div class="metrics-grid">
+    <mat-card *ngFor="let metric of metrics()" class="metric-card" [style.borderLeftColor]="metric.color">
+      <mat-card-content class="metric-content">
+        <div class="metric-info">
+          <span class="metric-label">{{ metric.title }}</span>
+          <span class="metric-value">{{ metric.value }}</span>
+          <span class="metric-desc">{{ metric.description }}</span>
+        </div>
+        <div class="metric-icon-box" [style.backgroundColor]="metric.color + '1a'" [style.color]="metric.color">
+          <mat-icon>{{ metric.icon }}</mat-icon>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Interactive SVG Architecture Diagram Section -->
+  <section class="section-container architecture-section">
+    <mat-card class="arc-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon class="header-icon">account_tree</mat-icon>
+          Angular Architecture Flow
+        </mat-card-title>
+        <mat-card-subtitle>High-level flow of request, response, and reactive state data binding</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="diagram-container">
+          <!-- Flow boxes built using HTML & CSS -->
+          <div class="flow-step node-view">
+            <div class="node-title">Template / View</div>
+            <div class="node-desc">HTML/CSS UI Layer</div>
+            <div class="node-reactive">User Events / Data Binding</div>
+          </div>
+
+          <div class="flow-arrow-container">
+            <svg class="flow-arrow-svg" viewBox="0 0 100 40">
+              <path d="M 0 20 Q 50 35 100 20" fill="none" stroke="#e91e63" stroke-width="2" stroke-dasharray="4" />
+              <polygon points="100,20 92,16 95,20 92,24" fill="#e91e63" />
+              <text x="50%" y="12" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.6)">Binding</text>
+            </svg>
+          </div>
+
+          <div class="flow-step node-component">
+            <div class="node-title">Component</div>
+            <div class="node-desc">TypeScript Logic</div>
+            <div class="node-reactive">Signals & Local State</div>
+          </div>
+
+          <div class="flow-arrow-container">
+            <svg class="flow-arrow-svg" viewBox="0 0 100 40">
+              <path d="M 0 20 H 100" fill="none" stroke="#3f51b5" stroke-width="2" />
+              <polygon points="100,20 92,16 95,20 92,24" fill="#3f51b5" />
+              <text x="50%" y="12" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.6)">Injects</text>
+            </svg>
+          </div>
+
+          <div class="flow-step node-service">
+            <div class="node-title">Service / Store</div>
+            <div class="node-desc">Singleton Business Logic</div>
+            <div class="node-reactive">BehaviorSubject / RxJS</div>
+          </div>
+
+          <div class="flow-arrow-container">
+            <svg class="flow-arrow-svg" viewBox="0 0 100 40">
+              <path d="M 0 20 H 100" fill="none" stroke="#00bcd4" stroke-width="2" stroke-dasharray="4" />
+              <polygon points="100,20 92,16 95,20 92,24" fill="#00bcd4" />
+              <text x="50%" y="12" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.6)">HTTP Req</text>
+            </svg>
+          </div>
+
+          <div class="flow-step node-interceptor">
+            <div class="node-title">Interceptors</div>
+            <div class="node-desc">Logging, Errors, Retry</div>
+            <div class="node-reactive">Request/Response Pipes</div>
+          </div>
+
+          <div class="flow-arrow-container">
+            <svg class="flow-arrow-svg" viewBox="0 0 100 40">
+              <path d="M 0 20 H 100" fill="none" stroke="#4caf50" stroke-width="2" />
+              <polygon points="100,20 92,16 95,20 92,24" fill="#4caf50" />
+              <text x="50%" y="12" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.6)">Fetch</text>
+            </svg>
+          </div>
+
+          <div class="flow-step node-api">
+            <div class="node-title">Remote API</div>
+            <div class="node-desc">Mock API Servers</div>
+            <div class="node-reactive">JSON Data Endpoints</div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </section>
+
+  <!-- SSR & Hydration Architecture Card -->
+  <section class="section-container architecture-section" style="margin-top: 24px;">
+    <mat-card class="arc-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon class="header-icon" style="color: #00bcd4;">cloud_queue</mat-icon>
+          Server-Side Rendering (SSR) &amp; Hydration
+        </mat-card-title>
+        <mat-card-subtitle>Contrasting Client-Side Rendering against modern Angular Hydration models</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="theory-block" style="background: rgba(0, 188, 212, 0.05); border-left-color: #00bcd4; margin-bottom: 16px;">
+          Modern Angular supports full <strong>non-destructive hydration</strong>. Instead of wiping out pre-rendered server DOM nodes and rendering from scratch on boot, Angular matches the client code to existing elements, reducing layout shifts and achieving instant interactivity.
+        </div>
+
+        <div class="ssr-grid">
+          <!-- Step 1: CSR -->
+          <div class="ssr-step-card">
+            <div class="ssr-step-header" style="color: #ff9800;">
+              <mat-icon>devices</mat-icon>
+              <h4>1. Client-Side Rendering (CSR)</h4>
+            </div>
+            <p class="ssr-step-desc">
+              The browser receives an empty index shell <code>&lt;app-root&gt;&lt;/app-root&gt;</code> and downloads javascript bundles. The page remains completely blank until scripts are parsed and run.
+            </p>
+          </div>
+
+          <!-- Step 2: SSR Paint -->
+          <div class="ssr-step-card">
+            <div class="ssr-step-header" style="color: #00bcd4;">
+              <mat-icon>dns</mat-icon>
+              <h4>2. Server pre-render (SSR Paint)</h4>
+            </div>
+            <p class="ssr-step-desc">
+              A Node.js server executes Angular ahead of time, serving fully formed static HTML content immediately. Users see text/images instantly, but elements aren't interactive yet.
+            </p>
+          </div>
+
+          <!-- Step 3: Hydration -->
+          <div class="ssr-step-card">
+            <div class="ssr-step-header" style="color: #4caf50;">
+              <mat-icon>opacity</mat-icon>
+              <h4>3. non-destructive Hydration</h4>
+            </div>
+            <p class="ssr-step-desc">
+              Client-side script runs and "hydrates" the DOM. It binds event listeners and starts CD (Change Detection) directly on the existing elements without re-drawing the page layout.
+            </p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </section>
+
+
+  <!-- Showcase Laboratory Navigation Grid -->
+  <section class="section-container">
+    <h2 class="section-title">Showcase Modules Laboratory</h2>
+    <div class="feature-grid">
+      <mat-card *ngFor="let feature of featureModules()" class="feature-card">
+        <mat-card-header>
+          <div class="feature-icon-wrapper">
+            <mat-icon>{{ feature.icon }}</mat-icon>
+          </div>
+          <mat-card-title class="feature-name">{{ feature.name }}</mat-card-title>
+          <mat-card-subtitle>
+            <span class="complexity-badge" [ngClass]="feature.complexity.toLowerCase()">
+              {{ feature.complexity }}
+            </span>
+          </mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content class="feature-desc">
+          <p>{{ feature.description }}</p>
+        </mat-card-content>
+        <mat-card-actions align="end">
+          <button mat-button color="primary" [routerLink]="feature.route">
+            LAUNCH LAB <mat-icon>science</mat-icon>
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </section>
+</div>

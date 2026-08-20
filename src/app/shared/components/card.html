@@ -1,0 +1,33 @@
+<mat-card class="showcase-card">
+  <!-- Card Header Slot -->
+  <mat-card-header>
+    <div class="header-container">
+      <ng-container *ngIf="customHeaderTemplate; else defaultHeader">
+        <ng-container *ngTemplateOutlet="customHeaderTemplate"></ng-container>
+      </ng-container>
+      <ng-template #defaultHeader>
+        <mat-card-title>{{ title }}</mat-card-title>
+        <mat-card-subtitle *ngIf="subtitle">{{ subtitle }}</mat-card-subtitle>
+      </ng-template>
+      <!-- Projected header extra elements (e.g. actions/icons) -->
+      <div class="header-actions">
+        <ng-content select="[card-header-actions]"></ng-content>
+      </div>
+    </div>
+  </mat-card-header>
+
+  <!-- Card Body Slot (Default Projection) -->
+  <mat-card-content class="card-body">
+    <ng-content></ng-content>
+  </mat-card-content>
+
+  <!-- Card Footer Slot -->
+  <mat-card-actions *ngIf="showFooter" align="end" class="card-footer">
+    <ng-container *ngIf="customFooterTemplate; else defaultFooter">
+      <ng-container *ngTemplateOutlet="customFooterTemplate"></ng-container>
+    </ng-container>
+    <ng-template #defaultFooter>
+      <ng-content select="[card-footer-buttons]"></ng-content>
+    </ng-template>
+  </mat-card-actions>
+</mat-card>

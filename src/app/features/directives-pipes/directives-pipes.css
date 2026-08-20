@@ -1,0 +1,243 @@
+.page-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.directive-demo-block {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+}
+
+.directive-demo-block:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+.demo-control-row {
+  margin-bottom: 12px;
+}
+
+.animated-box {
+  padding: 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.primary-bg {
+  background: rgba(63, 81, 181, 0.15);
+  border: 1px solid rgba(63, 81, 181, 0.3);
+  color: #7986cb;
+}
+
+.control-row {
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.radio-group {
+  display: flex;
+  gap: 16px;
+}
+
+.switch-box {
+  margin-top: 8px;
+}
+
+.alert-box {
+  padding: 12px 16px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  border: 1px solid;
+}
+
+.alert-box.green {
+  background: rgba(76, 175, 80, 0.1);
+  color: #81c784;
+  border-color: rgba(76, 175, 80, 0.2);
+}
+
+.alert-box.orange {
+  background: rgba(255, 152, 0, 0.1);
+  color: #ffb74d;
+  border-color: rgba(255, 152, 0, 0.2);
+}
+
+.alert-box.gray {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.7);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.target-styled-box {
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  text-align: center;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  margin-bottom: 12px;
+}
+
+.target-styled-box.active-glow-class {
+  background: linear-gradient(135deg, rgba(63, 81, 181, 0.15) 0%, rgba(233, 30, 99, 0.15) 100%);
+  border-color: #e91e63;
+  box-shadow: 0 0 15px rgba(233, 30, 99, 0.3);
+}
+
+.font-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 13px;
+}
+
+/* Custom Highlight style */
+.highlight-target-area {
+  padding: 24px;
+  border-radius: 8px;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  text-align: center;
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+  background-color: transparent;
+}
+
+/* Pipe transforms page styles */
+.sort-selector-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+  background: rgba(0, 0, 0, 0.15);
+  padding: 16px 20px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.async-clock {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #00bcd4;
+  font-size: 14px;
+}
+
+.async-clock mat-icon {
+  animation: pulse 1s infinite alternate;
+}
+
+.sort-controls-box {
+  display: flex;
+  gap: 12px;
+}
+
+.select-field {
+  width: 180px;
+  margin-bottom: 0 !important;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.product-item-card {
+  background: rgba(255, 255, 255, 0.01) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-radius: 8px !important;
+  transition: transform 0.2s ease;
+}
+
+.product-item-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0, 188, 212, 0.3) !important;
+}
+
+.product-title {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.product-body {
+  padding: 12px 16px !important;
+}
+
+.product-desc {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 16px;
+  line-height: 1.5;
+  height: 36px;
+  overflow: hidden;
+}
+
+.pricing-metrics {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pricing-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.price-lbl {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.price-val {
+  font-weight: 500;
+}
+
+.price-val.discount {
+  color: #ffb74d;
+}
+
+.pricing-row.final {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 6px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.price-val.final {
+  color: #81c784;
+}
+
+@keyframes pulse {
+  from { opacity: 0.6; }
+  to { opacity: 1; }
+}
+
+@media (max-width: 768px) {
+  .sort-selector-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

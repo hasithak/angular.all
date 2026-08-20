@@ -1,0 +1,324 @@
+<div class="page-container">
+  <header class="page-header">
+    <div class="page-title-box">
+      <mat-icon>sync_alt</mat-icon>
+      <h1>Data Binding Laboratory</h1>
+    </div>
+    <p class="page-description">
+      Examine the core mechanisms that sync components to templates: interpolation text, property flows, event triggers, and two-way dynamic syncing.
+    </p>
+  </header>
+
+  <div class="grid-2">
+    <!-- Left Column: Interactive Demos -->
+    <div class="demos-column">
+      <!-- Part 1: Interpolation -->
+      <mat-card class="section-card">
+        <div class="section-title-bar">
+          <mat-icon>font_download</mat-icon>
+          <h2>1. Interpolation ({{ '{{ expression \\}\\}' }})</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block">
+            <strong>Interpolation</strong> evaluates TypeScript expressions in double curly braces and inserts the result as text into the DOM.
+          </div>
+
+          <div class="demo-box">
+            <div class="binding-item">
+              <span class="binding-label">Static App Title:</span>
+              <span class="binding-value">{{ appName }}</span>
+            </div>
+
+            <div class="binding-item">
+              <span class="binding-label">Dynamic Time Tracker:</span>
+              <span class="binding-value text-glowing">{{ currentTimestamp | date:'medium' }}</span>
+            </div>
+
+            <div class="binding-item">
+              <span class="binding-label">Mathematical Calculation (15 * 6):</span>
+              <span class="binding-value">{{ 15 * 6 }}</span>
+            </div>
+
+            <div class="binding-item">
+              <span class="binding-label">Logical Evaluation (Check Admin role):</span>
+              <span class="binding-value">{{ appName.includes('Showcase') ? 'Showcase detected' : 'Standard app' }}</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Part 2: Property Binding -->
+      <mat-card class="section-card" style="margin-top: 24px;">
+        <div class="section-title-bar">
+          <mat-icon>settings_ethernet</mat-icon>
+          <h2>2. Property Binding ([property]="value")</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block">
+            <strong>Property Binding</strong> maps template elements' properties to component fields, updating DOM properties when states change.
+          </div>
+
+          <div class="demo-box">
+            <!-- Toggle input to change boolean state -->
+            <div class="control-row">
+              <mat-slide-toggle [checked]="isButtonDisabled()" (change)="toggleButtonState()">
+                Disable Targeted Button
+              </mat-slide-toggle>
+            </div>
+
+            <!-- Button disabled property bound to state -->
+            <div class="actions-row">
+              <button mat-flat-button color="primary" [disabled]="isButtonDisabled()">
+                Target Button (Property Bound)
+              </button>
+            </div>
+
+            <!-- Slide size binding to dimension property -->
+            <div class="slider-row">
+              <label>Adjust Box Dimension: {{ boxSize() }}px</label>
+              <mat-slider min="40" max="150" step="5">
+                <input matSliderThumb [value]="boxSize()" (valueChange)="boxSize.set($event)" />
+              </mat-slider>
+            </div>
+
+            <!-- Style Property Binding demo -->
+            <div class="style-demo-wrapper">
+              <div
+                class="preview-box"
+                [style.width.px]="boxSize()"
+                [style.height.px]="boxSize()"
+                [style.backgroundColor]="colorPalette()"
+              >
+                BOX
+              </div>
+              <div class="palette-selectors">
+                <button class="palette-dot" style="background:#3f51b5;" (click)="changeColor('#3f51b5')"></button>
+                <button class="palette-dot" style="background:#e91e63;" (click)="changeColor('#e91e63')"></button>
+                <button class="palette-dot" style="background:#4caf50;" (click)="changeColor('#4caf50')"></button>
+                <button class="palette-dot" style="background:#ff9800;" (click)="changeColor('#ff9800')"></button>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Part 3: Event Binding -->
+      <mat-card class="section-card" style="margin-top: 24px;">
+        <div class="section-title-bar">
+          <mat-icon>touch_app</mat-icon>
+          <h2>3. Event Binding ((event)="handler()")</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block">
+            <strong>Event Binding</strong> captures DOM events (clicks, keyups, movements) and routes them to component methods, passing an optional <code>$event</code> object.
+          </div>
+
+          <div class="demo-box">
+            <!-- Click Event Binding -->
+            <div class="actions-row">
+              <button mat-flat-button color="accent" (click)="handleButtonClick($event)">
+                Increment Click counter (Event Bound)
+              </button>
+            </div>
+
+            <div class="binding-item">
+              <span class="binding-label">Total Button Click Actions:</span>
+              <span class="binding-value value-glow">{{ clickCount() }}</span>
+            </div>
+
+            <!-- Hover Mouse Event coordinates mapping -->
+            <div class="coordinate-tracker-box" (mousemove)="handleMouseMove($event)">
+              <span class="tracker-label">Hover mouse over this canvas surface</span>
+              <div class="coords">
+                X: <span class="coord-val">{{ lastMouseCoords().x }}</span> | 
+                Y: <span class="coord-val">{{ lastMouseCoords().y }}</span>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Part 4: Two-Way Data Binding -->
+      <mat-card class="section-card" style="margin-top: 24px;">
+        <div class="section-title-bar">
+          <mat-icon>sync</mat-icon>
+          <h2>4. Two-Way Data Binding ([(ngModel)])</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block">
+            <strong>Two-Way Binding</strong> combines Property and Event binding. Changes to inputs update the TS model, and TS model updates sync back to the input.
+          </div>
+
+          <div class="demo-box">
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="form-field-flex">
+                <mat-label>Developer Name</mat-label>
+                <!-- Two way binding syntax -->
+                <input matInput [(ngModel)]="userName" />
+              </mat-form-field>
+            </div>
+
+            <!-- Live Preview Avatar card showing model synchronization -->
+            <div class="avatar-preview-card" [ngClass]="userProfileTheme()">
+              <div class="avatar-large">
+                {{ userName().substring(0, 2).toUpperCase() }}
+              </div>
+              <div class="avatar-details">
+                <div class="avatar-name">{{ userName() }}</div>
+                <div class="avatar-tag">Live Sync Model</div>
+              </div>
+              <div class="theme-picker-row">
+                <label>Avatar Color:</label>
+                <div class="color-options">
+                  <button
+                    class="theme-btn indigo"
+                    (click)="userProfileTheme.set('indigo')"
+                    [class.active]="userProfileTheme() === 'indigo'"
+                  ></button>
+                  <button
+                    class="theme-btn rose"
+                    (click)="userProfileTheme.set('rose')"
+                    [class.active]="userProfileTheme() === 'rose'"
+                  ></button>
+                  <button
+                    class="theme-btn emerald"
+                    (click)="userProfileTheme.set('emerald')"
+                    [class.active]="userProfileTheme() === 'emerald'"
+                  ></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Right Column: Code Explanation Panel -->
+    <div class="explanation-column">
+      <mat-card class="section-card" style="height: 100%;">
+        <div class="section-title-bar">
+          <mat-icon>menu_book</mat-icon>
+          <h2>Code Sample &amp; Concept Explanation</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block" style="background: rgba(121, 134, 203, 0.05); border-left-color: #7986cb; margin-bottom: 24px;">
+            <strong>Data Binding System:</strong>
+            <ul>
+              <li><strong>Interpolation &amp; Property Binding</strong>: Flow values unidirectionally from the TypeScript component to the HTML view template.</li>
+              <li><strong>Event Binding</strong>: Flows data from the HTML view template (user action) to the TypeScript component method.</li>
+              <li><strong>Two-Way Binding</strong>: Synchronizes both directions simultaneously, typically using the <code>[(ngModel)]</code> directive (requires <code>FormsModule</code>).</li>
+            </ul>
+          </div>
+
+          <div class="explanation-sections">
+            <div class="explanation-block">
+              <h3>1. Interpolation &amp; Property Flow</h3>
+              <p class="page-description">Injecting strings dynamically and binding properties to DOM targets.</p>
+              <pre ngNonBindable><code>&lt;!-- HTML Template Usage --&gt;
+&lt;!-- Interpolation --&gt;
+&lt;div class="binding-item"&gt;
+  &lt;span class="binding-label"&gt;Static App Title:&lt;/span&gt;
+  &lt;span class="binding-value"&gt;&#123;&#123; appName &#125;&#125;&lt;/span&gt;
+&lt;/div&gt;
+
+&lt;div class="binding-item"&gt;
+  &lt;span class="binding-label"&gt;Dynamic Time Tracker:&lt;/span&gt;
+  &lt;span class="binding-value text-glowing"&gt;&#123;&#123; currentTimestamp | date:'medium' &#125;&#125;&lt;/span&gt;
+&lt;/div&gt;
+
+&lt;div class="binding-item"&gt;
+  &lt;span class="binding-label"&gt;Mathematical Calculation (15 * 6):&lt;/span&gt;
+  &lt;span class="binding-value"&gt;&#123;&#123; 15 * 6 &#125;&#125;&lt;/span&gt;
+&lt;/div&gt;
+
+&lt;div class="binding-item"&gt;
+  &lt;span class="binding-label"&gt;Logical Evaluation:&lt;/span&gt;
+  &lt;span class="binding-value"&gt;&#123;&#123; appName.includes('Showcase') ? 'Showcase detected' : 'Standard app' &#125;&#125;&lt;/span&gt;
+&lt;/div&gt;
+
+&lt;!-- Property Binding --&gt;
+&lt;mat-slide-toggle [checked]="isButtonDisabled()" (change)="toggleButtonState()"&gt;
+  Disable Targeted Button
+&lt;/mat-slide-toggle&gt;
+
+&lt;button mat-flat-button color="primary" [disabled]="isButtonDisabled()"&gt;
+  Target Button (Property Bound)
+&lt;/button&gt;
+
+&lt;mat-slider min="40" max="150" step="5"&gt;
+  &lt;input matSliderThumb [value]="boxSize()" (valueChange)="boxSize.set($event)" /&gt;
+&lt;/mat-slider&gt;
+
+&lt;div class="preview-box"
+     [style.width.px]="boxSize()"
+     [style.height.px]="boxSize()"
+     [style.backgroundColor]="colorPalette()"&gt;
+  BOX
+&lt;/div&gt;
+
+&lt;!-- TypeScript Component Controller --&gt;
+public appName = 'Angular Showcase Lab';
+public currentTimestamp = new Date();
+
+public isButtonDisabled = signal(false);
+public boxSize = signal(60);
+public colorPalette = signal('#3f51b5');
+
+public toggleButtonState(): void &#123;
+  this.isButtonDisabled.update(state =&gt; !state);
+&#125;
+
+public changeColor(color: string): void &#123;
+  this.colorPalette.set(color);
+&#125;</code></pre>
+            </div>
+
+            <div class="explanation-block" style="margin-top: 32px;">
+              <h3>2. Event &amp; Two-Way Sync</h3>
+              <p class="page-description">Routing actions back to state and setting up bi-directional model sync.</p>
+              <pre ngNonBindable><code>&lt;!-- HTML Template Usage --&gt;
+&lt;!-- Event Binding --&gt;
+&lt;button mat-flat-button color="accent" (click)="handleButtonClick($event)"&gt;
+  Increment Click counter (Event Bound)
+&lt;/button&gt;
+
+&lt;div class="binding-item"&gt;
+  &lt;span class="binding-label"&gt;Total Button Click Actions:&lt;/span&gt;
+  &lt;span class="binding-value value-glow"&gt;&#123;&#123; clickCount() &#125;&#125;&lt;/span&gt;
+&lt;/div&gt;
+
+&lt;div class="coordinate-tracker-box" (mousemove)="handleMouseMove($event)"&gt;
+  &lt;span class="tracker-label"&gt;Hover mouse over this canvas surface&lt;/span&gt;
+  &lt;div class="coords"&gt;
+    X: &lt;span class="coord-val"&gt;&#123;&#123; lastMouseCoords().x &#125;&#125;&lt;/span&gt; | 
+    Y: &lt;span class="coord-val"&gt;&#123;&#123; lastMouseCoords().y &#125;&#125;&lt;/span&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- Two-Way Binding --&gt;
+&lt;input [(ngModel)]="userName" /&gt;
+&lt;div class="avatar-large"&gt;
+  &#123;&#123; userName().substring(0, 2).toUpperCase() &#125;&#125;
+&lt;/div&gt;
+&lt;div class="avatar-name"&gt;&#123;&#123; userName() &#125;&#125;&lt;/div&gt;
+
+&lt;!-- TypeScript Component Controller --&gt;
+public clickCount = signal(0);
+public lastMouseCoords = signal(&#123; x: 0, y: 0 &#125;);
+public userName = signal('Developer');
+public userProfileTheme = signal('indigo');
+
+public handleButtonClick(event: MouseEvent): void &#123;
+  this.clickCount.update(c =&gt; c + 1);
+&#125;
+
+public handleMouseMove(event: MouseEvent): void &#123;
+  this.lastMouseCoords.set(&#123; x: event.offsetX, y: event.offsetY &#125;);
+&#125;</code></pre>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,204 @@
+<div class="page-container">
+  <header class="page-header">
+    <div class="page-title-box">
+      <mat-icon style="color: #ff4081;">filter_alt</mat-icon>
+      <h1>Modern Control Flow</h1>
+    </div>
+    <p class="page-description">
+      Explore Angular's built-in control flow (&#64;if, &#64;for, &#64;switch) introduced in v17, offering better type checking, no module import overhead, and up to 90% faster runtime checks.
+    </p>
+  </header>
+
+  <div class="grid-2">
+    <!-- Left Column: Interactive Demos -->
+    <div class="demos-column">
+      <!-- Part 1: @if/@else -->
+      <mat-card class="section-card">
+        <div class="section-title-bar">
+          <mat-icon>check_circle_outline</mat-icon>
+          <h2>1. Conditional Blocks (&#64;if / &#64;else)</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block">
+            <strong>&#64;if / &#64;else</strong> allows rendering HTML fragments based on logic. Unlike <code>*ngIf</code>, it requires zero module imports and provides direct typescript narrowings.
+          </div>
+
+          <div class="demo-box">
+            <div class="form-row">
+              <button mat-flat-button color="primary" (click)="togglePanel()">
+                Toggle Visibility Panel
+              </button>
+            </div>
+
+            <div class="interactive-box">
+              @if (isPanelVisible()) {
+                <div class="visible-panel">
+                  <mat-icon style="vertical-align: middle; margin-right: 8px;">visibility</mat-icon>
+                  <strong>Active State:</strong> The condition is true. Rendering primary content block.
+                </div>
+              } @else {
+                <div class="hidden-panel">
+                  <mat-icon style="vertical-align: middle; margin-right: 8px;">visibility_off</mat-icon>
+                  <strong>Fallback State:</strong> The condition is false. Rendering else content block.
+                </div>
+              }
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Part 2: @for with @empty -->
+      <mat-card class="section-card" style="margin-top: 24px;">
+        <div class="section-title-bar">
+          <mat-icon>list</mat-icon>
+          <h2>2. Loop Operations (&#64;for with &#64;empty)</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block">
+            <strong>&#64;for</strong> renders list items. It requires a mandatory <code>track</code> expression for performance tracking. The <strong>&#64;empty</strong> block renders automatically when the list contains zero entries.
+          </div>
+
+          <div class="demo-box">
+            <div class="form-row" style="margin-bottom: 16px;">
+              <button mat-raised-button color="accent" (click)="addTask()">Add Demo Task</button>
+              <button mat-stroked-button color="warn" (click)="clearTasks()">Clear All (Trigger &#64;empty)</button>
+              <button mat-button (click)="resetTasks()">Reset List</button>
+            </div>
+
+            <div class="interactive-box" style="padding: 0;">
+              @for (task of tasks(); track task.id; let index = $index; let total = $count) {
+                <div class="task-item">
+                  <span class="task-title">
+                    <strong>#{{ index + 1 }}</strong> of {{ total }}: {{ task.title }}
+                  </span>
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="task-status" [class.status-completed]="task.status === 'Completed'" [class.status-pending]="task.status === 'Pending'">
+                      {{ task.status }}
+                    </span>
+                    <button mat-icon-button color="warn" (click)="removeTask(task.id)">
+                      <mat-icon style="font-size: 18px; width: 18px; height: 18px;">delete</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              } @empty {
+                <div class="empty-state">
+                  <mat-icon style="font-size: 36px; width: 36px; height: 36px; margin-bottom: 8px;">inbox</mat-icon>
+                  <div>No tasks left. The <strong>&#64;empty</strong> block is now actively rendered.</div>
+                </div>
+              }
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Part 3: @switch -->
+      <mat-card class="section-card" style="margin-top: 24px;">
+        <div class="section-title-bar">
+          <mat-icon>radio_button_checked</mat-icon>
+          <h2>3. Multi-path Switch (&#64;switch)</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block">
+            <strong>&#64;switch</strong> matches expressions and renders corresponding cases. It operates like native javascript switch statements.
+          </div>
+
+          <div class="demo-box">
+            <div class="radio-group-container">
+              <label>Select Display Theme Mode:</label>
+              <mat-radio-group [(ngModel)]="currentTheme">
+                <mat-radio-button value="neon-pink">Neon Pink</mat-radio-button>
+                <mat-radio-button value="cyber-blue">Cyber Blue</mat-radio-button>
+                <mat-radio-button value="emerald-glow">Emerald Glow</mat-radio-button>
+              </mat-radio-group>
+            </div>
+
+            <div class="interactive-box">
+              @switch (currentTheme()) {
+                @case ('neon-pink') {
+                  <div class="theme-card-preview neon-pink">
+                    <mat-icon style="vertical-align: middle; margin-right: 8px;">lens</mat-icon>
+                    Neon Pink Theme Block Active
+                  </div>
+                }
+                @case ('cyber-blue') {
+                  <div class="theme-card-preview cyber-blue">
+                    <mat-icon style="vertical-align: middle; margin-right: 8px;">flash_on</mat-icon>
+                    Cyber Blue Theme Block Active
+                  </div>
+                }
+                @case ('emerald-glow') {
+                  <div class="theme-card-preview emerald-glow">
+                    <mat-icon style="vertical-align: middle; margin-right: 8px;">eco</mat-icon>
+                    Emerald Glow Theme Block Active
+                  </div>
+                }
+                @default {
+                  <div class="theme-card-preview">Default Theme Block Active</div>
+                }
+              }
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Right Column: Code Explanation Panel -->
+    <div class="explanation-column">
+      <mat-card class="section-card" style="height: 100%;">
+        <div class="section-title-bar">
+          <mat-icon>menu_book</mat-icon>
+          <h2>Control Flow Reference</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block" style="background: rgba(233, 30, 99, 0.05); border-left-color: #ff4081; margin-bottom: 24px;">
+            <strong>Why use built-in control flow?</strong>
+            <ul>
+              <li><strong>Import Less Code</strong>: No need to import <code>CommonModule</code> or <code>NgIf</code> / <code>NgFor</code> into standalone components.</li>
+              <li><strong>Type Safety</strong>: Better type-narrowing inside conditional blocks (e.g. strict null checks).</li>
+              <li><strong>Performance</strong>: Native compiler translation leads to micro-optimizations that perform faster than directives.</li>
+            </ul>
+          </div>
+
+          <div class="explanation-sections">
+            <div class="explanation-block">
+              <h3>&#64;if / &#64;else syntax</h3>
+              <pre ngNonBindable><code>&#64;if (isPanelVisible()) &#123;
+  &lt;div class="visible-panel"&gt;Visible Content&lt;/div&gt;
+&#125; &#64;else &#123;
+  &lt;div class="hidden-panel"&gt;Else Fallback Content&lt;/div&gt;
+&#125;</code></pre>
+            </div>
+
+            <div class="explanation-block" style="margin-top: 24px;">
+              <h3>&#64;for / &#64;empty syntax</h3>
+              <pre ngNonBindable><code>&lt;!-- "track" is mandatory --&gt;
+&#64;for (task of tasks(); track task.id; let idx = $index) &#123;
+  &lt;div class="task-item"&gt;
+    &#123;&#123; idx + 1 &#125;&#125;. &#123;&#123; task.title &#125;&#125;
+  &lt;/div&gt;
+&#125; &#64;empty &#123;
+  &lt;!-- Renders automatically when tasks list is empty --&gt;
+  &lt;div class="empty-state"&gt;No tasks left.&lt;/div&gt;
+&#125;</code></pre>
+            </div>
+
+            <div class="explanation-block" style="margin-top: 24px;">
+              <h3>&#64;switch syntax</h3>
+              <pre ngNonBindable><code>&#64;switch (currentTheme()) &#123;
+  &#64;case ('neon-pink') &#123;
+    &lt;div class="neon-pink"&gt;Pink Mode&lt;/div&gt;
+  &#125;
+  &#64;case ('cyber-blue') &#123;
+    &lt;div class="cyber-blue"&gt;Blue Mode&lt;/div&gt;
+  &#125;
+  &#64;default &#123;
+    &lt;div&gt;Standard Mode&lt;/div&gt;
+  &#125;
+&#125;</code></pre>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,140 @@
+<div class="page-container">
+  <header class="page-header">
+    <div class="page-title-box">
+      <mat-icon style="color: #ff4081;">animation</mat-icon>
+      <h1>Animations Arena</h1>
+    </div>
+    <p class="page-description">
+      Animate HTML elements dynamically using Angular's animation engine. Define states, transitions, staggering, and cubic-bezier interpolation.
+    </p>
+  </header>
+
+  <div class="grid-2">
+    <!-- Left Column: Interactive Demos -->
+    <div class="demos-column">
+      <!-- Part 1: Open/Closed State transitions -->
+      <mat-card class="section-card">
+        <div class="section-title-bar">
+          <mat-icon>unfold_more</mat-icon>
+          <h2>1. State-Based Animations (state &amp; transition)</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block">
+            Using <code>state()</code> and <code>transition()</code> allows declarative morphing of CSS properties based on component variables.
+          </div>
+
+          <div class="demo-box">
+            <div class="form-row" style="margin-bottom: 16px;">
+              <button mat-flat-button color="primary" (click)="toggleCardState()">
+                Trigger State Transition
+              </button>
+            </div>
+
+            <!-- Bind animation state dynamically -->
+            <div class="animation-panel-box" [@openClose]="isCardOpen() ? 'open' : 'closed'">
+              <span class="state-indicator" [class.glow-pink]="isCardOpen()" [class.glow-gray]="!isCardOpen()">
+                STATE: {{ isCardOpen() ? 'OPEN' : 'CLOSED' }}
+              </span>
+              <p style="margin: 8px 0 0 0; font-size: 13px; color: rgba(255,255,255,0.7); line-height: 1.5;">
+                This card transitions height, opacity, background color, and border color smoothly using <code>cubic-bezier</code> curves.
+              </p>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Part 2: Enter/Leave and Stagger -->
+      <mat-card class="section-card" style="margin-top: 24px;">
+        <div class="section-title-bar">
+          <mat-icon>reorder</mat-icon>
+          <h2>2. List Animations (stagger, :enter, :leave)</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block">
+            Staggering animations delays subsequent list transitions by a microsecond count, resulting in a beautiful fluid cascade when elements are added or removed.
+          </div>
+
+          <div class="demo-box">
+            <div class="form-row">
+              <button mat-raised-button color="accent" (click)="addItem()">Add List Item</button>
+              <button mat-button (click)="resetItems()">Reset List</button>
+            </div>
+
+            <!-- List transition container -->
+            <div class="anim-list-container" [@listAnimation]="items().length">
+              @for (item of items(); track item.id) {
+                <div class="anim-list-item">
+                  <span>{{ item.label }}</span>
+                  <button mat-icon-button color="warn" (click)="removeItem(item.id)">
+                    <mat-icon style="font-size: 18px; width: 18px; height: 18px;">delete</mat-icon>
+                  </button>
+                </div>
+              }
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Right Column: Code Explanation Panel -->
+    <div class="explanation-column">
+      <mat-card class="section-card" style="height: 100%;">
+        <div class="section-title-bar">
+          <mat-icon>menu_book</mat-icon>
+          <h2>Animations Reference</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block" style="background: rgba(233, 30, 99, 0.05); border-left-color: #ff4081; margin-bottom: 24px;">
+            <strong>Setup requirements:</strong>
+            <ul>
+              <li><strong>Import</strong>: Enable the browser animation capabilities by importing <code>provideAnimations()</code> in <code>app.config.ts</code>.</li>
+              <li><strong>Trigger</strong>: Decorate components with the <code>animations</code> array.</li>
+              <li><strong>Template Binding</strong>: Bind triggers using <code>&#64;triggerName</code> or <code>[&#64;triggerName]="state"</code> syntax.</li>
+            </ul>
+          </div>
+
+          <div class="explanation-sections">
+            <div class="explanation-block">
+              <h3>State &amp; Transition Config</h3>
+              <p class="page-description">Defining card states and transition curves.</p>
+              <pre ngNonBindable><code>import &#123; trigger, state, style, animate, transition &#125; from '&#64;angular/animations';
+
+&#64;Component(&#123;
+  animations: [
+    trigger('openClose', [
+      state('open', style(&#123;
+        height: '140px',
+        opacity: 1
+      &#125;)),
+      state('closed', style(&#123;
+        height: '60px',
+        opacity: 0.7
+      &#125;)),
+      transition('open &lt;=&gt; closed', [
+        animate('0.3s cubic-bezier(0.4, 0, 0.2, 1)')
+      ])
+    ])
+  ]
+&#125;)</code></pre>
+            </div>
+
+            <div class="explanation-block" style="margin-top: 24px;">
+              <h3>Stagger &amp; Querying</h3>
+              <p class="page-description">Delaying sequential element transitions dynamically.</p>
+              <pre ngNonBindable><code>trigger('listAnimation', [
+  transition('* =&gt; *', [
+    query(':enter', [
+      style(&#123; opacity: 0, transform: 'translateX(-30px)' &#125;),
+      stagger('80ms', [
+        animate('0.25s ease-out', style(&#123; opacity: 1, transform: 'translateX(0)' &#125;))
+      ])
+    ], &#123; optional: true &#125;)
+  ])
+])</code></pre>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

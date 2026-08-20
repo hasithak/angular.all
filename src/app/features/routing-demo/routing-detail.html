@@ -1,0 +1,64 @@
+<div class="page-container">
+  <!-- Breadcrumbs -->
+  <div class="breadcrumb-trail">
+    <a routerLink="/dashboard" class="bc-link">Dashboard</a>
+    <mat-icon class="bc-sep">chevron_right</mat-icon>
+    <a routerLink="/routing-demo" class="bc-link">Routing Laboratory</a>
+    <mat-icon class="bc-sep">chevron_right</mat-icon>
+    <span class="bc-active">Detail: {{ id }}</span>
+  </div>
+
+  <header class="page-header">
+    <div class="page-title-box">
+      <mat-icon>analytics</mat-icon>
+      <h1>Dynamic Route Inspection</h1>
+    </div>
+    <p class="page-description">
+      This page is rendered dynamically based on the URL path segment. It showcases modern Angular route parameter binding.
+    </p>
+  </header>
+
+  <mat-card class="section-card detail-display-card">
+    <div class="section-title-bar">
+      <mat-icon>assignment</mat-icon>
+      <h2>Captured Parameters &amp; Meta</h2>
+    </div>
+    <mat-card-content class="section-content">
+      <div class="details-grid">
+        <!-- Path Param -->
+        <div class="param-box">
+          <div class="param-lbl">Path Parameter (ID)</div>
+          <div class="param-val highlight-indigo">{{ id }}</div>
+          <div class="param-desc">Extracted from <code>detail/:id</code> template pattern.</div>
+        </div>
+
+        <!-- Query Param -->
+        <div class="param-box">
+          <div class="param-lbl">Query Parameter (Category)</div>
+          <div class="param-val highlight-pink">{{ category || 'None' }}</div>
+          <div class="param-desc">Extracted from <code>?category=val</code> address parameter.</div>
+        </div>
+
+        <!-- Source Param -->
+        <div class="param-box">
+          <div class="param-lbl">Query Parameter (Source)</div>
+          <div class="param-val highlight-green">{{ source || 'None' }}</div>
+          <div class="param-desc">Extracted from <code>?source=val</code> address parameter.</div>
+        </div>
+
+        <!-- Resolver data -->
+        <div class="param-box full-width-box">
+          <div class="param-lbl">Resolver Payload (Pre-fetched)</div>
+          <div class="param-val">{{ resolverData?.resolvedData }}</div>
+          <div class="param-desc">Resolved at: <strong>{{ resolverData?.resolvedTime }}</strong>. Loaded before component render.</div>
+        </div>
+      </div>
+
+      <div class="action-footer">
+        <a mat-flat-button color="primary" routerLink="/routing-demo">
+          <mat-icon>arrow_back</mat-icon> RETURN TO ROUTING LAB
+        </a>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

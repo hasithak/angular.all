@@ -1,0 +1,199 @@
+<div class="page-container">
+  <header class="page-header">
+    <div class="page-title-box">
+      <mat-icon style="color: #ff4081;">tag</mat-icon>
+      <h1>Template Variables &amp; Layout Outlets</h1>
+    </div>
+    <p class="page-description">
+      Learn how to query DOM elements using reference identifiers (#var), load dynamic layouts with ngTemplateOutlet, and perform null-safe property lookup.
+    </p>
+  </header>
+
+  <div class="grid-2">
+    <!-- Left Column: Interactive Sandboxes -->
+    <div class="demos-column">
+      <!-- Part 1: Template Reference Variables -->
+      <mat-card class="section-card">
+        <div class="section-title-bar">
+          <mat-icon>science</mat-icon>
+          <h2>1. Element Queries (#templateInput)</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block">
+            Declaring <code>#varName</code> creates a template reference variable pointing to the element node, making it accessible throughout the template.
+          </div>
+
+          <div class="demo-box">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Template Ref Input Demo</mat-label>
+              <input matInput #templateInput placeholder="Type something to see live binding..." />
+            </mat-form-field>
+
+            <div style="background: rgba(255, 255, 255, 0.02); padding: 12px; border-radius: 6px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05);">
+              <div><strong>Direct HTML Template binding:</strong></div>
+              <div style="font-family: monospace; color: #ffb74d; font-size: 13px; margin-top: 4px;">
+                {{ templateInput.value || '(Empty input)' }}
+              </div>
+            </div>
+
+            <div class="actions-row">
+              <button mat-raised-button color="accent" (click)="focusInputElement()" class="full-width">
+                Focus Input via ElementRef
+              </button>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Part 2: ngTemplateOutlet -->
+      <mat-card class="section-card" style="margin-top: 24px;">
+        <div class="section-title-bar">
+          <mat-icon>layers</mat-icon>
+          <h2>2. Dynamic Layout Reusability (ngTemplateOutlet)</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block">
+            <strong>ngTemplateOutlet</strong> allows inserting predefined templates programmatically. You can pass a context object to bind properties inside the template dynamically.
+          </div>
+
+          <div class="demo-box">
+            <div style="margin-bottom: 16px;">
+              <label style="margin-right: 12px; font-size: 13px;">Choose Layout Variant:</label>
+              <mat-radio-group [ngModel]="selectedLayout()" (ngModelChange)="selectedLayout.set($event)">
+                <mat-radio-button value="card">Card Layout</mat-radio-button>
+                <mat-radio-button value="list">List Layout</mat-radio-button>
+              </mat-radio-group>
+            </div>
+
+            <div style="min-height: 80px; background: rgba(0,0,0,0.15); padding: 16px; border-radius: 8px; border: 1px dashed rgba(255,255,255,0.08);">
+              <!-- Render selected layout outlet template dynamically -->
+              @if (selectedLayout() === 'card') {
+                <ng-container [ngTemplateOutlet]="cardLayout" [ngTemplateOutletContext]="templateContext"></ng-container>
+              } @else {
+                <ng-container [ngTemplateOutlet]="listLayout" [ngTemplateOutletContext]="templateContext"></ng-container>
+              }
+            </div>
+
+            <!-- Predefined Template Definitions -->
+            <ng-template #cardLayout let-header let-desc="description">
+              <div style="padding: 16px; border: 1px solid rgba(233,30,99,0.3); background: rgba(233,30,99,0.03); border-radius: 8px;">
+                <h3 style="margin: 0; color: #ff4081; font-size: 14px;">🎴 {{ header }}</h3>
+                <p style="margin: 8px 0 0 0; font-size: 12.5px; color: rgba(255,255,255,0.7); line-height: 1.5;">{{ desc }}</p>
+              </div>
+            </ng-template>
+
+            <ng-template #listLayout let-header let-desc="description">
+              <div style="padding: 12px 16px; border-left: 4px solid #2196f3; background: rgba(33,150,243,0.05); border-radius: 0 6px 6px 0;">
+                <strong style="color: #2196f3; font-size: 13.5px;">📋 {{ header }}</strong>
+                <div style="font-size: 12px; margin-top: 4px; color: rgba(255,255,255,0.6); line-height: 1.4;">{{ desc }}</div>
+              </div>
+            </ng-template>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Part 3: Null safety ?. and Alias -->
+      <mat-card class="section-card" style="margin-top: 24px;">
+        <div class="section-title-bar">
+          <mat-icon>security</mat-icon>
+          <h2>3. Null-Safe Navigation (?.) &amp; Alias (as)</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block">
+            Use <strong>?.</strong> to prevent errors when referencing nested keys of null objects. Use alias bindings inside conditionals to scope local variable references cleanly.
+          </div>
+
+          <div class="demo-box">
+            <div class="form-row" style="margin-bottom: 16px;">
+              <button mat-raised-button color="warn" (click)="nullifyUser()">Nullify User</button>
+              <button mat-button (click)="restoreUser()">Restore User</button>
+            </div>
+
+            <div style="background: rgba(0,0,0,0.15); padding: 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+              <!-- Null safe rendering -->
+              <div style="font-size: 13px; margin-bottom: 12px;">
+                <strong>Null-Safe Profile Bio:</strong>
+                <span style="display: block; margin-top: 4px; color: #81c784; font-style: italic;">
+                  {{ activeUser()?.profile?.bio || 'No profile details available.' }}
+                </span>
+              </div>
+
+              <mat-divider style="margin: 12px 0; border-color: rgba(255,255,255,0.05);"></mat-divider>
+
+              <!-- Conditional Alias rendering -->
+              <div>
+                <strong>Conditional Alias Scope:</strong>
+                @if (activeUser(); as user) {
+                  <div style="margin-top: 6px; font-size: 13px;">
+                    User: <strong style="color: #2196f3;">{{ user.name }}</strong> is active.
+                  </div>
+                } @else {
+                  <div style="margin-top: 6px; font-size: 13px; color: rgba(255,255,255,0.4);">
+                    No user object active. Alias scope closed.
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Right Column: Code Explanation Panel -->
+    <div class="explanation-column">
+      <mat-card class="section-card" style="height: 100%;">
+        <div class="section-title-bar">
+          <mat-icon>code</mat-icon>
+          <h2>Code Sample &amp; Concept Explanation</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block" style="background: rgba(129, 199, 132, 0.05); border-left-color: #81c784;">
+            <strong>Template Tricks:</strong>
+            <ul>
+              <li><strong>Zero JS Overhead</strong>: Declaring <code>#templateInput</code> on an element makes it accessible globally across the template without writing TypeScript code.</li>
+              <li><strong>Outlet Reusability</strong>: Use <code>ngTemplateOutlet</code> to render clean sub-templates without wrapping them inside complex custom components.</li>
+              <li><strong>Null Safety</strong>: Standard navigation checks prevent javascript runtime errors when loading remote asynchronous resources.</li>
+            </ul>
+          </div>
+
+          <div class="explanation-sections">
+            <div class="explanation-block">
+              <h3>1. Template Outlet Context Binding</h3>
+              <p class="page-description">Injecting dynamic layout references and templates.</p>
+              <pre ngNonBindable><code>&lt;!-- Define Templates --&gt;
+&lt;ng-template #cardLayout let-hdr let-desc="description"&gt;
+  &lt;div class="card"&gt;
+    &lt;h3&gt;&#123;&#123; hdr &#125;&#125;&lt;/h3&gt;
+    &lt;p&gt;&#123;&#123; desc &#125;&#125;&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/ng-template&gt;
+
+&lt;!-- Load Template dynamically passing context properties --&gt;
+&lt;ng-container [ngTemplateOutlet]="cardLayout" 
+              [ngTemplateOutletContext]="templateContext"&gt;
+&lt;/ng-container&gt;
+
+&lt;!-- TS --&gt;
+public templateContext = &#123;
+  $implicit: 'Header Title',
+  description: 'Context Description text...'
+&#125;;</code></pre>
+            </div>
+
+            <div class="explanation-block" style="margin-top: 24px;">
+              <h3>2. Null Safety &amp; Alias Checks</h3>
+              <p class="page-description">Preventing property errors and binding conditional aliases.</p>
+              <pre ngNonBindable><code>&lt;!-- Null-Safe Navigation checks --&gt;
+&lt;span&gt;&#123;&#123; activeUser()?.profile?.bio &#125;&#125;&lt;/span&gt;
+
+&lt;!-- Alias Binding (Angular 17+ &#64;if syntax) --&gt;
+&#64;if (activeUser(); as user) &#123;
+  &lt;div&gt;Active Name: &#123;&#123; user.name &#125;&#125;&lt;/div&gt;
+&#125;</code></pre>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,194 @@
+<div class="page-container">
+  <header class="page-header">
+    <div class="page-title-box">
+      <mat-icon>cloud_sync</mat-icon>
+      <h1>HTTP Client & Interceptor Laboratory</h1>
+    </div>
+    <p class="page-description">
+      Execute REST API methods (GET, POST, PUT, DELETE) using Angular's HttpClient. Audit the interceptor chain and test auto-retry pipelines on network errors.
+    </p>
+  </header>
+
+  <!-- Progress Bar Loader -->
+  <mat-progress-bar mode="indeterminate" class="http-loader" *ngIf="isLoading()"></mat-progress-bar>
+
+  <div class="grid-2">
+    <!-- Left Column: Interactive Demos -->
+    <div class="demos-column">
+      <!-- Part 1: REST Todo Sandbox -->
+      <mat-card class="section-card todo-sandbox-card">
+        <div class="section-title-bar">
+          <mat-icon>playlist_add_check</mat-icon>
+          <h2>REST API Sandbox (JSONPlaceholder)</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block">
+            Demonstrating CRUD operations on <code>https://jsonplaceholder.typicode.com/todos</code>.
+            Notice the console logs: our <code>LoggingInterceptor</code> measures request speeds.
+          </div>
+
+          <div class="todo-input-form">
+            <mat-form-field appearance="outline" class="title-input">
+              <mat-label>New Task Title</mat-label>
+              <input matInput [(ngModel)]="newTodoTitle" placeholder="e.g. Write integration test suites" (keyup.enter)="createTodo()" />
+            </mat-form-field>
+            <button mat-flat-button color="primary" class="add-btn" (click)="createTodo()" [disabled]="isLoading() || !newTodoTitle.trim()">
+              <mat-icon>add</mat-icon> ADD
+            </button>
+          </div>
+
+          <div class="todos-table-container">
+            <div *ngIf="todos().length === 0 && !isLoading()" class="empty-state">
+              <mat-icon>inbox</mat-icon>
+              <p>No todos available. Click fetch to reload.</p>
+              <button mat-stroked-button color="primary" (click)="fetchTodos()">Reload</button>
+            </div>
+
+            <!-- Todo list -->
+            <div class="todo-list">
+              <div *ngFor="let todo of todos()" class="todo-row-item" [class.completed]="todo.completed">
+                <div class="todo-main-info">
+                  <button mat-icon-button (click)="toggleTodoComplete(todo)" [disabled]="isLoading()" class="status-chk-btn" title="Toggle completeness">
+                    <mat-icon color="primary">{{ todo.completed ? 'check_box' : 'check_box_outline_blank' }}</mat-icon>
+                  </button>
+                  <span class="todo-title-text">{{ todo.title }}</span>
+                </div>
+                <div class="todo-actions">
+                  <span class="todo-id-tag">#{{ todo.id }}</span>
+                  <button mat-icon-button color="warn" (click)="deleteTodo(todo.id)" [disabled]="isLoading()" title="Delete Todo">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Part 2: Error Pipeline & Auto-Retry -->
+      <mat-card class="section-card" style="margin-top: 24px;">
+        <div class="section-title-bar">
+          <mat-icon>sync_problem</mat-icon>
+          <h2>Auto-Retry &amp; Network Error Handling</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block">
+            <strong>Retry Operator</strong> automatically re-subscribes to failed Observables.
+            This block requests a non-existent API URL. The HTTP pipeline will automatically attempt to connect 3 times (initial + 2 retries) before emitting the final error.
+          </div>
+
+          <div class="demo-box">
+            <div class="actions-row">
+              <button mat-flat-button color="warn" class="full-width" (click)="triggerHttpErrorWithRetry()" [disabled]="isLoading()">
+                TRIGGER ERROR REQUEST WITH AUTO-RETRY
+              </button>
+            </div>
+
+            <div class="error-log-display" *ngIf="errorLog()">
+              <div class="error-log-header">
+                <mat-icon>report</mat-icon>
+                <span>Pipeline Interception Caught Error:</span>
+              </div>
+              <pre class="error-log-body"><code>{{ errorLog() }}</code></pre>
+              <div class="hint-caption">Check the sidebar or console logs: you will see three distinct HTTP requests executed before this block appeared.</div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Right Column: Code Explanation Panel -->
+    <div class="explanation-column">
+      <!-- Part 3: Detailed Code Explanation Panel -->
+      <mat-card class="section-card" style="height: 100%;">
+        <div class="section-title-bar">
+          <mat-icon>menu_book</mat-icon>
+          <h2>Code Sample &amp; Concept Explanation</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block" style="background: rgba(121, 134, 203, 0.05); border-left-color: #7986cb; margin-bottom: 24px;">
+            <strong>Modern HttpClient Architecture:</strong>
+            <ul>
+              <li><strong>Functional Interceptors</strong>: In modern Angular, interceptors are lightweight functions (<code>HttpInterceptorFn</code>) instead of classes implementing interfaces.</li>
+              <li><strong>Registration</strong>: Configured inside the <code>provideHttpClient(withInterceptors([ ... ]))</code> call in <code>app.config.ts</code>.</li>
+            </ul>
+          </div>
+
+          <div class="explanation-sections">
+            <div class="explanation-block">
+              <h3>1. Request Header Injection (Header Interceptor)</h3>
+              <p class="page-description">Clones the outbound request to inject custom headers immutably before dispatching.</p>
+              <pre ngNonBindable><code>export const headerInterceptor: HttpInterceptorFn = (req, next) =&gt; &#123;
+  const customReq = req.clone(&#123;
+    setHeaders: &#123;
+      'X-App-Client': 'AngularFeatureShowcase'
+    &#125;
+  &#125;);
+  return next(customReq);
+&#125;;</code></pre>
+            </div>
+
+            <div class="explanation-block" style="margin-top: 32px;">
+              <h3>2. Response Latency Audit (Logging Interceptor)</h3>
+              <p class="page-description">Intercepts incoming responses to compute execution time and logs state variables.</p>
+              <pre ngNonBindable><code>export const loggingInterceptor: HttpInterceptorFn = (req, next) =&gt; &#123;
+  const logger = inject(LoggingService);
+  const startTime = Date.now();
+
+  return next(req).pipe(
+    finalize(() =&gt; &#123;
+      const duration = Date.now() - startTime;
+      logger.info(`Request $&#123;req.method&#125; $&#123;req.url&#125; took $&#123;duration&#125;ms`);
+    &#125;)
+  );
+&#125;;</code></pre>
+            </div>
+
+            <div class="explanation-block" style="margin-top: 32px;">
+              <h3>3. CRUD Operations inside Component</h3>
+              <p class="page-description">HTML template bindings, followed by standard REST requests using HttpClient.</p>
+              <pre ngNonBindable><code>&lt;!-- HTML Template Usage --&gt;
+&lt;input [(ngModel)]="newTodoTitle" (keyup.enter)="createTodo()" /&gt;
+&lt;button (click)="createTodo()"&gt;ADD&lt;/button&gt;
+
+&lt;div *ngFor="let todo of todos()"&gt;
+  &lt;span&gt;&#123;&#123; todo.title &#125;&#125;&lt;/span&gt;
+  &lt;button (click)="deleteTodo(todo.id)"&gt;Delete&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;!-- TypeScript Component Controller --&gt;
+// GET list
+this.http.get&lt;Todo[]&gt;(`$&#123;this.apiBaseUrl&#125;?_limit=5`)
+  .subscribe(data =&gt; this.todos.set(data));
+
+// POST creation
+this.http.post&lt;Todo&gt;(this.apiBaseUrl, mockNewTodo)
+  .subscribe(createdItem =&gt; &#123;
+    this.todos.update(current =&gt; [createdItem, ...current]);
+  &#125;);</code></pre>
+            </div>
+
+            <div class="explanation-block" style="margin-top: 32px;">
+              <h3>4. Auto-Retry Pipeline with Error catching</h3>
+              <p class="page-description">HTML error trigger button, followed by RxJS retry/catch error pipeline.</p>
+              <pre ngNonBindable><code>&lt;!-- HTML Template Usage --&gt;
+&lt;button (click)="triggerHttpErrorWithRetry()"&gt;Trigger Retry&lt;/button&gt;
+&lt;pre&gt;&#123;&#123; errorLog() &#125;&#125;&lt;/pre&gt;
+
+&lt;!-- TypeScript Component Controller --&gt;
+this.http.get('https://non-existent-api-dns-error.dev/data').pipe(
+  // Automatically re-request 2 times (total 3 attempts)
+  retry(2),
+  catchError(err =&gt; &#123;
+    return throwError(() =&gt; new Error('Connection failed after 2 retry attempts.'));
+  &#125;)
+).subscribe(&#123;
+  error: err =&gt; this.errorLog.set(err.message)
+&#125;);</code></pre>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,370 @@
+<div class="page-container">
+  <header class="page-header">
+    <div class="page-title-box">
+      <mat-icon>feed</mat-icon>
+      <h1>Forms Laboratory</h1>
+    </div>
+    <p class="page-description">
+      Evaluate Angular forms methodologies. Contrast class-based Reactive controls, model-driven Template structures, and runtime configuration schema compilation.
+    </p>
+  </header>
+
+  <div class="grid-2">
+    <!-- Left Column: Interactive Tabbed Form Sandboxes -->
+    <div class="demos-column">
+      <mat-tab-group class="section-card">
+        <!-- Tab 1: Reactive Forms -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon class="tab-icon">settings_suggest</mat-icon>
+            Reactive Form Lab
+          </ng-template>
+
+          <div class="tab-content-container">
+            <div class="theory-block">
+              <strong>Reactive Forms</strong> provide direct, explicit access to the underlying form object model. They are structured, synchronous, and highly testable.
+            </div>
+
+            <form [formGroup]="profileForm" (ngSubmit)="submitReactiveForm()" class="showcase-form">
+              <!-- 1. Username with Async Validator -->
+              <!-- 1. Username with Async Validator -->
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Username (Async Checked: type 'admin' or 'root' to test)</mat-label>
+                  <input matInput formControlName="username" placeholder="Choose username" />
+                  <mat-icon matSuffix *ngIf="profileForm.get('username')?.pending">
+                    <span class="spinner-suffix">refresh</span>
+                  </mat-icon>
+                  <mat-hint *ngIf="profileForm.get('username')?.pending" class="pending-hint">Validating username availability online...</mat-hint>
+                  <mat-error *ngIf="profileForm.get('username')?.hasError('required')">Username is required</mat-error>
+                  <mat-error *ngIf="profileForm.get('username')?.hasError('minlength')">Must be at least 4 characters</mat-error>
+                  <mat-error *ngIf="profileForm.get('username')?.hasError('usernameTaken')">Username is already taken!</mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Email Address</mat-label>
+                  <input matInput type="email" formControlName="email" placeholder="developer@example.com" />
+                  <mat-error *ngIf="profileForm.get('email')?.hasError('required')">Email is required</mat-error>
+                  <mat-error *ngIf="profileForm.get('email')?.hasError('email')">Invalid email format</mat-error>
+                </mat-form-field>
+              </div>
+
+              <!-- 2. Password with Complexity Validator -->
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="form-field-flex">
+                  <mat-label>Password</mat-label>
+                  <input matInput type="password" formControlName="password" />
+                  <mat-error *ngIf="profileForm.get('password')?.hasError('required')">Password is required</mat-error>
+                  <mat-error *ngIf="profileForm.get('password')?.hasError('minlength')">Must be at least 6 characters</mat-error>
+                  <mat-error *ngIf="profileForm.get('password')?.hasError('passwordComplexity')">
+                    {{ profileForm.get('password')?.getError('passwordComplexity') }}
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="form-field-flex">
+                  <mat-label>Confirm Password</mat-label>
+                  <input matInput type="password" formControlName="confirmPassword" />
+                  <mat-error *ngIf="profileForm.hasError('passwordsMismatch') && profileForm.get('confirmPassword')?.touched">
+                    Passwords do not match!
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <mat-divider class="divider-spacing"></mat-divider>
+
+              <!-- 3. Nested FormGroup (Address) -->
+              <div formGroupName="address" class="nested-group-container">
+                <h3 class="group-title"><mat-icon>home</mat-icon> Address details (Nested FormGroup)</h3>
+                <div class="form-row">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Street Address</mat-label>
+                    <input matInput formControlName="street" />
+                  </mat-form-field>
+                </div>
+
+                <div class="form-row">
+                  <mat-form-field appearance="outline" class="form-field-flex">
+                    <mat-label>City</mat-label>
+                    <input matInput formControlName="city" />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="form-field-flex">
+                    <mat-label>Zip Code (5 Digits)</mat-label>
+                    <input matInput formControlName="zipCode" placeholder="12345" />
+                    <mat-error *ngIf="profileForm.get('address.zipCode')?.hasError('pattern')">Must be exactly 5 numbers</mat-error>
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <mat-divider class="divider-spacing"></mat-divider>
+
+              <!-- 4. FormArray (Dynamic Skills list) -->
+              <div formArrayName="skills" class="form-array-container">
+                <div class="array-header">
+                  <h3 class="group-title"><mat-icon>terminal</mat-icon> Skills Inventory (FormArray)</h3>
+                  <button mat-stroked-button color="primary" type="button" (click)="addSkillInput()">
+                    <mat-icon>add</mat-icon> ADD SKILL
+                  </button>
+                </div>
+
+                <div class="array-items">
+                  <div *ngFor="let skill of skillsArray.controls; let idx = index" class="array-row">
+                    <mat-form-field appearance="outline" class="form-field-flex">
+                      <mat-label>Skill Title #{{ idx + 1 }}</mat-label>
+                      <input matInput [formControlName]="idx" placeholder="e.g. RxJS, Angular" />
+                    </mat-form-field>
+                    <button mat-icon-button color="warn" type="button" (click)="removeSkillInput(idx)" [disabled]="skillsArray.length <= 1">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button mat-flat-button color="primary" type="submit" [disabled]="profileForm.invalid || profileForm.pending">
+                  SUBMIT PROFILE FORM
+                </button>
+              </div>
+            </form>
+          </div>
+        </mat-tab>
+
+        <!-- Tab 2: Template-Driven Forms -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon class="tab-icon">assignment</mat-icon>
+            Template Driven Form
+          </ng-template>
+
+          <div class="tab-content-container">
+            <div class="theory-block">
+              <strong>Template-Driven Forms</strong> delegate state management and validation logic to the template directives. Simple to implement for basic feedback inputs.
+            </div>
+
+            <form #feedbackForm="ngForm" (ngSubmit)="submitTemplateForm(feedbackForm)" class="showcase-form">
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Full Name</mat-label>
+                  <input matInput name="fullName" [(ngModel)]="feedbackModel.fullName" required #fullName="ngModel" />
+                  <mat-error *ngIf="fullName.invalid && (fullName.dirty || fullName.touched)">Name is required</mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Email</mat-label>
+                  <input matInput type="email" name="email" [(ngModel)]="feedbackModel.email" required email #email="ngModel" />
+                  <mat-error *ngIf="email.invalid && (email.dirty || email.touched)">Valid email is required</mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="form-field-flex">
+                  <mat-label>Feedback Category</mat-label>
+                  <mat-select name="category" [(ngModel)]="feedbackModel.category">
+                    <mat-option value="bug">Report a Bug</mat-option>
+                    <mat-option value="feature">Request Feature</mat-option>
+                    <mat-option value="other">Other Inquiry</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Message Detail</mat-label>
+                  <textarea matInput name="message" [(ngModel)]="feedbackModel.message" rows="4" required minlength="10" #message="ngModel"></textarea>
+                  <mat-error *ngIf="message.invalid && (message.dirty || message.touched)">Must write at least 10 characters</mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row checkbox-row">
+                <mat-checkbox name="subscribe" [(ngModel)]="feedbackModel.subscribe">
+                  Keep me updated via email notifications
+                </mat-checkbox>
+              </div>
+
+              <div class="form-actions">
+                <button mat-flat-button color="accent" type="submit" [disabled]="feedbackForm.invalid">
+                  SUBMIT CONTACT FEEDBACK
+                </button>
+              </div>
+            </form>
+          </div>
+        </mat-tab>
+
+        <!-- Tab 3: Dynamic Forms Schema -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon class="tab-icon">schema</mat-icon>
+            Dynamic Form Schema
+          </ng-template>
+
+          <div class="tab-content-container">
+            <div class="theory-block">
+              <strong>Dynamic Forms</strong> build control models at runtime by compiling dynamic configurations (e.g. JSON metadata schemas), ideal for content management tools.
+            </div>
+
+            <form [formGroup]="dynamicForm" (ngSubmit)="submitDynamicForm()" class="showcase-form">
+              <div *ngFor="let field of dynamicFields" class="form-row">
+                <!-- Render Text fields dynamically -->
+                <mat-form-field *ngIf="field.type === 'text'" appearance="outline" class="full-width">
+                  <mat-label>{{ field.label }}</mat-label>
+                  <input matInput [formControlName]="field.key" />
+                  <mat-error *ngIf="dynamicForm.get(field.key)?.hasError('required')">Field is required</mat-error>
+                </mat-form-field>
+
+                <!-- Render Dropdowns dynamically -->
+                <mat-form-field *ngIf="field.type === 'select'" appearance="outline" class="full-width">
+                  <mat-label>{{ field.label }}</mat-label>
+                  <mat-select [formControlName]="field.key">
+                    <mat-option *ngFor="let opt of field.options" [value]="opt">{{ opt }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <!-- Render Checkboxes dynamically -->
+                <div *ngIf="field.type === 'checkbox'" class="checkbox-row full-width">
+                  <mat-checkbox [formControlName]="field.key">{{ field.label }}</mat-checkbox>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button mat-flat-button color="primary" type="submit" [disabled]="dynamicForm.invalid">
+                  SUBMIT DYNAMIC SCHEMA
+                </button>
+              </div>
+            </form>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+
+    <!-- Right Column: Code Explanation Panel -->
+    <div class="explanation-column">
+      <!-- Part 4: Detailed Code Explanation Panel -->
+      <mat-card class="section-card" style="height: 100%;">
+        <div class="section-title-bar">
+          <mat-icon>menu_book</mat-icon>
+          <h2>Code Sample &amp; Concept Explanation</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block" style="background: rgba(121, 134, 203, 0.05); border-left-color: #7986cb; margin-bottom: 24px;">
+            <strong>Angular Forms Architectures:</strong>
+            <ul>
+              <li><strong>Reactive Forms</strong>: Programmatic, structured, synchronous, and reactive. All validations and structures are managed inside TypeScript.</li>
+              <li><strong>Template-Driven Forms</strong>: Direct template bindings (<code>ngModel</code>). Validation attributes (like <code>required</code> or <code>email</code>) are evaluated directly on DOM inputs.</li>
+              <li><strong>Validators</strong>: Synchronous validators return validation error maps immediately. Asynchronous validators return Observables/Promises emitting verification status.</li>
+            </ul>
+          </div>
+
+          <div class="explanation-sections">
+            <div class="explanation-block">
+              <h3>1. Reactive Form &amp; Complex Validation</h3>
+              <p class="page-description">Reactive HTML binding layout, followed by FormBuilder control setup.</p>
+              <pre ngNonBindable><code>&lt;!-- HTML Template Usage --&gt;
+&lt;form [formGroup]="profileForm" (ngSubmit)="submitReactiveForm()"&gt;
+  &lt;input formControlName="username" /&gt;
+  &lt;div formGroupName="address"&gt;
+    &lt;input formControlName="city" /&gt;
+  &lt;/div&gt;
+&lt;/form&gt;
+
+&lt;!-- TypeScript Component Controller --&gt;
+this.profileForm = this.fb.group(&#123;
+  username: ['', &#123;
+    validators: [Validators.required, Validators.minLength(4)],
+    asyncValidators: [this.usernameAvailabilityValidator.bind(this)],
+    updateOn: 'blur'
+  &#125;],
+  email: ['', [Validators.required, Validators.email]],
+  password: ['', [Validators.required, Validators.minLength(6), this.passwordComplexityValidator]],
+  confirmPassword: ['', [Validators.required]],
+  address: this.fb.group(&#123;
+    street: ['', Validators.required],
+    city: ['', Validators.required],
+    zipCode: ['', [Validators.required, Validators.pattern('^[0-9]&#123;5&#125;$')]]
+  &#125;),
+  skills: this.fb.array([this.fb.control('', Validators.required)])
+&#125;, &#123;
+  validators: [this.passwordsMatchValidator]
+&#125;);</code></pre>
+            </div>
+
+            <div class="explanation-block" style="margin-top: 32px;">
+              <h3>2. Dynamic Form Generation from Schemas</h3>
+              <p class="page-description">Resolving schema keys in HTML, followed by the dynamic FormGroup builder.</p>
+              <pre ngNonBindable><code>&lt;!-- HTML Template Usage --&gt;
+&lt;form [formGroup]="dynamicForm"&gt;
+  &lt;div *ngFor="let field of dynamicFields"&gt;
+    &lt;label&gt;&#123;&#123; field.label &#125;&#125;&lt;/label&gt;
+    &lt;input [formControlName]="field.key" /&gt;
+  &lt;/div&gt;
+&lt;/form&gt;
+
+&lt;!-- TypeScript Component Build --&gt;
+private initDynamicForm(): void &#123;
+  const group: any = &#123;&#125;;
+  this.dynamicFields.forEach((field) =&gt; &#123;
+    group[field.key] = this.fb.control(
+      field.value || '',
+      field.required ? Validators.required : null
+    );
+  &#125;);
+  this.dynamicForm = new FormGroup(group);
+&#125;</code></pre>
+            </div>
+
+            <div class="explanation-block" style="margin-top: 32px;">
+              <h3>3. Template-Driven Form Declarations</h3>
+              <p class="page-description">Binding component models and referencing DOM controls locally.</p>
+              <pre ngNonBindable><code>&lt;!-- HTML Template Usage --&gt;
+&lt;form #feedbackForm="ngForm" (ngSubmit)="submitTemplateForm(feedbackForm)"&gt;
+  &lt;input name="email" [(ngModel)]="feedbackModel.email" required email #email="ngModel" /&gt;
+  &lt;span *ngIf="email.invalid &amp;&amp; email.touched"&gt;Email is required&lt;/span&gt;
+&lt;/form&gt;
+
+&lt;!-- TypeScript Component Model --&gt;
+public feedbackModel = &#123;
+  fullName: '',
+  email: '',
+  category: 'bug',
+  message: '',
+  subscribe: false
+&#125;;</code></pre>
+            </div>
+
+            <div class="explanation-block" style="margin-top: 32px;">
+              <h3>4. Dynamic FormArrays (Skills list)</h3>
+              <p class="page-description">Iterating dynamic arrays in templates, followed by pushing controls in TS.</p>
+              <pre ngNonBindable><code>&lt;!-- HTML Template Usage --&gt;
+&lt;div [formGroup]="profileForm"&gt;
+  &lt;div formArrayName="skills"&gt;
+    &lt;div *ngFor="let skill of skillsArray.controls; let idx = index"&gt;
+      &lt;input [formControlName]="idx" /&gt;
+      &lt;button (click)="removeSkillInput(idx)"&gt;Delete&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- TypeScript Component Controller --&gt;
+public get skillsArray(): FormArray &#123;
+  return this.profileForm.get('skills') as FormArray;
+&#125;
+
+public addSkillInput(): void &#123;
+  this.skillsArray.push(this.fb.control('', Validators.required));
+&#125;
+
+public removeSkillInput(index: number): void &#123;
+  if (this.skillsArray.length &gt; 1) &#123;
+    this.skillsArray.removeAt(index);
+  &#125;
+&#125;</code></pre>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

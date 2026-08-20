@@ -1,0 +1,96 @@
+.page-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.parent-state-box {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  font-size: 13px;
+}
+
+.value-highlight {
+  color: #e91e63;
+  font-weight: 700;
+  font-size: 16px;
+  margin-left: 8px;
+}
+
+.actions-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+/* ViewChildren loop styling */
+.node-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 8px 16px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 13px;
+}
+
+.btn-group {
+  display: flex;
+  gap: 4px;
+}
+
+.children-list-container {
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.list-item-wrapper {
+  position: relative;
+  padding-top: 8px;
+}
+
+.index-label {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+  padding-left: 4px;
+}
+
+/* Template variables box */
+.rendered-text {
+  font-family: 'Consolas', monospace;
+  font-size: 14px;
+  color: #81c784;
+  margin-top: 8px;
+  word-break: break-all;
+}
+
+/* Content projection styles */
+.projected-highlight {
+  background: rgba(0, 188, 212, 0.1);
+  border-left: 3px solid #00bcd4;
+  padding: 8px 12px;
+  border-radius: 0 4px 4px 0;
+  margin: 12px 0;
+  font-size: 12px;
+  color: #00bcd4;
+}

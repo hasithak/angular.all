@@ -1,0 +1,149 @@
+<div class="page-container">
+  <header class="page-header">
+    <div class="page-title-box">
+      <mat-icon style="color: #f44336;">security</mat-icon>
+      <h1>Security &amp; Sanitization</h1>
+    </div>
+    <p class="page-description">
+      Learn how Angular protects against Cross-Site Scripting (XSS) by default, and how to use DomSanitizer when you need to bypass checks for trusted resources.
+    </p>
+  </header>
+
+  <div class="grid-2">
+    <!-- Left Column: Interactive Demos -->
+    <div class="demos-column">
+      <!-- Part 1: HTML Sanitization -->
+      <mat-card class="section-card">
+        <div class="section-title-bar">
+          <mat-icon>remove_moderator</mat-icon>
+          <h2>1. Cross-Site Scripting (XSS) Protection</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="warning-banner">
+            <mat-icon>warning</mat-icon>
+            <span><strong>Caution:</strong> Bypassing security can expose your app to malicious scripts. Only trust verified sources.</span>
+          </div>
+
+          <div class="demo-box">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>HTML Input Payload (malicious components will be sanitized)</mat-label>
+              <textarea matInput rows="4" [(ngModel)]="rawInput"></textarea>
+            </mat-form-field>
+
+            <div style="margin-bottom: 12px; display: flex; gap: 8px;">
+              <button mat-stroked-button (click)="resetInput()">Reset Default Payload</button>
+            </div>
+
+            <!-- Case A: Standard Interpolation -->
+            <div class="comparison-box">
+              <strong>Case A: Interpolation (escaped dynamically)</strong>
+              <p class="page-description">Values are treated as text only. All tags are printed literally.</p>
+              <div class="rendered-sandbox escaped-text">
+                {{ rawInput() }}
+              </div>
+            </div>
+
+            <!-- Case B: innerHTML Binding -->
+            <div class="comparison-box">
+              <strong>Case B: Property Binding [innerHTML] (sanitized by Angular)</strong>
+              <p class="page-description">Allows basic safe styles and elements, but strips out scripts and unsafe click event listeners.</p>
+              <div class="rendered-sandbox" [innerHTML]="rawInput()"></div>
+            </div>
+
+            <!-- Case C: DomSanitizer bypass -->
+            <div class="comparison-box">
+              <strong>Case C: DomSanitizer.bypassSecurityTrustHtml (trusted bypass)</strong>
+              <p class="page-description" style="color: #f44336;">Security checks are completely bypassed. Raw HTML and inline JavaScript events execute freely.</p>
+              <div class="rendered-sandbox" [innerHTML]="safeHtmlBypassed()"></div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Part 2: SafeResourceUrl Bypass -->
+      <mat-card class="section-card" style="margin-top: 24px;">
+        <div class="section-title-bar">
+          <mat-icon>smart_display</mat-icon>
+          <h2>2. Safe Resource URLs (Embedding Videos)</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block">
+            Angular prevents dynamic URL loading for security-sensitive tags like <code>&lt;iframe&gt;</code> by default. To embed a dynamic URL, it must be marked safe with <code>bypassSecurityTrustResourceUrl</code>.
+          </div>
+
+          <div class="demo-box">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>YouTube Video ID</mat-label>
+              <input matInput [(ngModel)]="videoIdInput" placeholder="Enter YouTube ID..." />
+            </mat-form-field>
+
+            <div class="iframe-container">
+              <!-- Render using bypassed security token url -->
+              <iframe [src]="videoUrlSanitized()" frameborder="0" allowfullscreen></iframe>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Right Column: Code Explanation Panel -->
+    <div class="explanation-column">
+      <mat-card class="section-card" style="height: 100%;">
+        <div class="section-title-bar">
+          <mat-icon>menu_book</mat-icon>
+          <h2>Sanitization Reference</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block" style="background: rgba(244, 67, 54, 0.05); border-left-color: #f44336; margin-bottom: 24px;">
+            <strong>Context-specific sanitization:</strong>
+            <ul>
+              <li><strong>HTML</strong>: Used for rich text and innerHTML injection. Strips unsafe scripts, elements.</li>
+              <li><strong>Style</strong>: Sanitizes CSS rules bound to attributes.</li>
+              <li><strong>URL</strong>: Sanitizes simple page redirects and anchor link tags.</li>
+              <li><strong>Resource URL</strong>: Sanitizes scripts, service workers, or iframes loaded from external hosts.</li>
+            </ul>
+          </div>
+
+          <div class="explanation-sections">
+            <div class="explanation-block">
+              <h3>Standard innerHTML Binding</h3>
+              <p class="page-description">Standard Angular auto-stripping mechanism.</p>
+              <pre ngNonBindable><code>&lt;!-- Angular automatically removes unsafe &lt;script&gt; elements --&gt;
+&lt;div [innerHTML]="rawInputString"&gt;&lt;/div&gt;</code></pre>
+            </div>
+
+            <div class="explanation-block" style="margin-top: 24px;">
+              <h3>Bypassing HTML Security</h3>
+              <p class="page-description">Marking HTML strings as completely trusted.</p>
+              <pre ngNonBindable><code>import &#123; Component, inject &#125; from '&#64;angular/core';
+import &#123; DomSanitizer, SafeHtml &#125; from '&#64;angular/platform-browser';
+
+&#64;Component(&#123;
+  selector: 'app-security-demo',
+  template: `&lt;div [innerHTML]="trustedHtml"&gt;&lt;/div&gt;`
+&#125;)
+export class SecurityDemoComponent &#123;
+  private readonly sanitizer = inject(DomSanitizer);
+  public trustedHtml!: SafeHtml;
+
+  public setContent(rawHtml: string) &#123;
+    // Bypasses sanitization pipeline completely
+    this.trustedHtml = this.sanitizer.bypassSecurityTrustHtml(rawHtml);
+  &#125;
+&#125;</code></pre>
+            </div>
+
+            <div class="explanation-block" style="margin-top: 24px;">
+              <h3>Bypassing Resource URLs</h3>
+              <p class="page-description">Allowing frames, dynamic scripts, or external links to execute.</p>
+              <pre ngNonBindable><code>&lt;iframe [src]="safeUrl"&gt;&lt;/iframe&gt;
+
+// TS
+this.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl('https://...');</code></pre>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

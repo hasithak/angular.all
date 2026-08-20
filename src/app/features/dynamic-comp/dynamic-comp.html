@@ -1,0 +1,153 @@
+<div class="page-container">
+  <header class="page-header">
+    <div class="page-title-box">
+      <mat-icon style="color: #2196f3;">extension</mat-icon>
+      <h1>Dynamic Components</h1>
+    </div>
+    <p class="page-description">
+      Mount, bind, and destroy components programmatically at runtime using ngComponentOutlet or by querying ViewContainerRef.
+    </p>
+  </header>
+
+  <div class="grid-2">
+    <!-- Left Column: Interactive Demos -->
+    <div class="demos-column">
+      <!-- Part 1: Template Declarative Dynamic Mounting -->
+      <mat-card class="section-card">
+        <div class="section-title-bar">
+          <mat-icon>layers</mat-icon>
+          <h2>1. Declarative Mounting ([ngComponentOutlet])</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block">
+            <strong>[ngComponentOutlet]</strong> is a declarative directive that automatically creates, inserts, and manages the lifecycle of a standalone component type passed as a property.
+          </div>
+
+          <div class="demo-box">
+            <div class="selector-bar">
+              <label>Select Widget type:</label>
+              <button mat-stroked-button (click)="setTemplateOutletWidget('info')">Load Diagnostics</button>
+              <button mat-stroked-button (click)="setTemplateOutletWidget('alert')">Load Critical Alert</button>
+              <button mat-button color="warn" (click)="setTemplateOutletWidget('none')">Destroy Component</button>
+            </div>
+
+            <div class="rendered-container" [class.active]="activeTemplateOutletWidget() !== null">
+              @if (activeTemplateOutletWidget()) {
+                <div style="width: 100%;">
+                  <!-- Target element for dynamic mounting -->
+                  <ng-container [ngComponentOutlet]="activeTemplateOutletWidget()"></ng-container>
+                </div>
+              } @else {
+                <div class="empty-placeholder">
+                  <mat-icon>widgets</mat-icon>
+                  No component active. Select a widget type above to mount it.
+                </div>
+              }
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Part 2: Programmatic Dynamic Mounting -->
+      <mat-card class="section-card" style="margin-top: 24px;">
+        <div class="section-title-bar">
+          <mat-icon>memory</mat-icon>
+          <h2>2. Programmatic Creation (ViewContainerRef)</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block">
+            <strong>ViewContainerRef.createComponent()</strong> instantiates a component class imperatively in TypeScript. This allows full access to the component reference for passing input signals, subscribing to outputs, or manual destroying.
+          </div>
+
+          <div class="demo-box">
+            <div class="form-row" style="margin-bottom: 16px;">
+              <button mat-flat-button color="accent" (click)="mountProgrammaticAlertWidget()" [disabled]="isProgrammaticCreated()">
+                Create Alert Component Programmatically
+              </button>
+              <button mat-stroked-button color="warn" (click)="cleanupProgrammaticComponent()" [disabled]="!isProgrammaticCreated()">
+                Destroy Component Ref
+              </button>
+            </div>
+
+            <div class="programmatic-box">
+              <div style="margin-bottom: 12px; font-size: 13px;">
+                <strong>Programmatic Status:</strong>
+                <span class="status-chip" [class.status-waiting]="alertAcknowledgeState() !== 'Acknowledged ✅'" [class.status-ack]="alertAcknowledgeState() === 'Acknowledged ✅'">
+                  {{ alertAcknowledgeState() }}
+                </span>
+              </div>
+
+              <!-- TARGET FOR PROGRAMMATIC COMPONENT INSERTION -->
+              <div #programmaticContainer></div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Right Column: Code Explanation Panel -->
+    <div class="explanation-column">
+      <mat-card class="section-card" style="height: 100%;">
+        <div class="section-title-bar">
+          <mat-icon>menu_book</mat-icon>
+          <h2>Dynamic Component Reference</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block" style="background: rgba(33, 150, 243, 0.05); border-left-color: #2196f3; margin-bottom: 24px;">
+            <strong>Dynamic loading use cases:</strong>
+            <ul>
+              <li><strong>Dashboard Widgets</strong>: Render custom widgets depending on user roles or profile choices.</li>
+              <li><strong>Modals &amp; Dialogs</strong>: Mount dynamic component sheets directly on global container elements.</li>
+              <li><strong>Dynamic Forms</strong>: Compile complex conditional questionnaires.</li>
+            </ul>
+          </div>
+
+          <div class="explanation-sections">
+            <div class="explanation-block">
+              <h3>Declarative: ngComponentOutlet</h3>
+              <p class="page-description">Injecting and rendering a component type directly in HTML templates.</p>
+              <pre ngNonBindable><code>&lt;!-- HTML View Template --&gt;
+&lt;ng-container [ngComponentOutlet]="widgetType"&gt;&lt;/ng-container&gt;
+
+&lt;!-- TypeScript Controller --&gt;
+import &#123; InfoWidgetComponent &#125; from './widgets';
+
+public widgetType = null;
+
+public loadInfoWidget() &#123;
+  this.widgetType = InfoWidgetComponent;
+&#125;</code></pre>
+            </div>
+
+            <div class="explanation-block" style="margin-top: 24px;">
+              <h3>Programmatic: ViewContainerRef</h3>
+              <p class="page-description">Creating component instances imperatively to handle bindings and lifecycle events in code.</p>
+              <pre ngNonBindable><code>&lt;!-- HTML Anchor Element --&gt;
+&lt;div #programmaticContainer&gt;&lt;/div&gt;
+
+&lt;!-- TypeScript Controller --&gt;
+import &#123; ViewContainerRef, ViewChild, ComponentRef &#125; from '&#64;angular/core';
+import &#123; AlertWidgetComponent &#125; from './widgets';
+
+&#64;ViewChild('programmaticContainer', &#123; read: ViewContainerRef &#125;)
+private container!: ViewContainerRef;
+
+private compRef: ComponentRef&lt;AlertWidgetComponent&gt; | null = null;
+
+public mountWidget() &#123;
+  this.container.clear(); // Destroy previous instances
+  this.compRef = this.container.createComponent(AlertWidgetComponent);
+  
+  // Set component inputs directly
+  this.compRef.instance.alertTitle = 'System Critical';
+  
+  // Clean up manually on destroy
+  // this.compRef.destroy();
+&#125;</code></pre>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

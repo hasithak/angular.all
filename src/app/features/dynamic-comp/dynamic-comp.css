@@ -1,0 +1,66 @@
+.dynamic-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.selector-bar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  align-items: center;
+}
+
+.rendered-container {
+  min-height: 180px;
+  background: rgba(0, 0, 0, 0.15);
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.rendered-container.active {
+  background: rgba(255, 255, 255, 0.02);
+  border-style: solid;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.programmatic-box {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.status-chip {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  margin-left: 8px;
+}
+
+.status-waiting {
+  background: rgba(255, 152, 0, 0.15);
+  color: #ffb74d;
+}
+
+.status-ack {
+  background: rgba(76, 175, 80, 0.15);
+  color: #81c784;
+}
+
+.empty-placeholder {
+  color: rgba(255,255,255,0.3);
+  font-style: italic;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

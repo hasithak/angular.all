@@ -1,0 +1,152 @@
+.page-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Breadcrumb styling */
+.breadcrumb-trail {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  margin-bottom: 16px;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.bc-link {
+  color: #00bcd4;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.bc-link:hover {
+  color: #80deea;
+  text-decoration: underline;
+}
+
+.bc-sep {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bc-active {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Resolver UI details */
+.resolver-status-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.status-lbl {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.resolver-details {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+
+.detail-row strong {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.detail-row .val {
+  color: #81c784;
+}
+
+/* Query params styling */
+.qp-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.btn-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Dynamic list item row layout */
+.items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 16px 20px;
+  flex-wrap: wrap;
+  gap: 16px;
+  transition: border-color 0.2s ease;
+}
+
+.item-row:hover {
+  border-color: rgba(233, 30, 99, 0.2);
+}
+
+.item-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.item-id {
+  font-family: 'Consolas', monospace;
+  font-size: 12px;
+  padding: 2px 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  color: #00bcd4;
+}
+
+.item-name {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.item-cat-badge {
+  font-size: 10px;
+  background: rgba(63, 81, 181, 0.15);
+  color: #7986cb;
+  padding: 1px 6px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.item-actions {
+  display: flex;
+  gap: 12px;
+}

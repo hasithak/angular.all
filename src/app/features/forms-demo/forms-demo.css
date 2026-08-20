@@ -1,0 +1,116 @@
+.page-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.tab-icon {
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+.tab-content-container {
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.01);
+}
+
+.showcase-form {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.divider-spacing {
+  margin: 24px 0 !important;
+  border-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Pending indicator loader style */
+.spinner-suffix {
+  animation: spinner-spin 1s linear infinite;
+  display: inline-block;
+  color: #00bcd4;
+}
+
+.pending-hint {
+  color: #00bcd4 !important;
+}
+
+@keyframes spinner-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Nested address container */
+.nested-group-container,
+.form-array-container {
+  background: rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.group-title {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.group-title mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+/* Dynamic skills arrays */
+.array-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.array-header h3 {
+  margin: 0;
+}
+
+.array-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.array-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.array-row mat-form-field {
+  margin-bottom: 0 !important;
+}
+
+/* Submit row button align */
+.form-actions {
+  margin-top: 24px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.checkbox-row {
+  margin: 12px 0;
+}
+
+/* Form details sizing */
+.form-field-flex-2 {
+  flex: 2;
+  min-width: 250px;
+}

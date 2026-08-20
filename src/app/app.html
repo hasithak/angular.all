@@ -1,0 +1,58 @@
+<!-- Global Runtime Error Banner -->
+<div *ngIf="globalError()" class="global-error-banner">
+  <div class="error-banner-content">
+    <mat-icon class="banner-icon">warning</mat-icon>
+    <span class="error-msg">{{ globalError() }}</span>
+  </div>
+  <button mat-icon-button (click)="dismissError()" class="close-banner-btn">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<!-- Application Shell -->
+<div class="app-shell">
+  <mat-sidenav-container class="sidenav-container">
+    <mat-sidenav #drawer class="sidenav" fixedInViewport="false" mode="side" opened="true">
+      <div class="brand-header">
+        <mat-icon class="brand-logo">auto_awesome</mat-icon>
+        <div class="brand-title">
+          <span>Angular Core</span>
+          <span class="brand-sub">Concepts Showcase</span>
+        </div>
+      </div>
+
+      <mat-nav-list class="nav-list">
+        <a
+          mat-list-item
+          *ngFor="let item of navItems()"
+          [routerLink]="item.route"
+          routerLinkActive="active-link"
+          [routerLinkActiveOptions]="{ exact: item.route === '/dashboard' }"
+          class="nav-item-link"
+        >
+          <mat-icon matListItemIcon class="nav-icon">{{ item.icon }}</mat-icon>
+          <span matListItemTitle class="nav-label">{{ item.label }}</span>
+        </a>
+      </mat-nav-list>
+    </mat-sidenav>
+
+    <mat-sidenav-content class="sidenav-content">
+      <mat-toolbar class="header-toolbar">
+        <button mat-icon-button (click)="drawer.toggle()" class="menu-toggle-btn">
+          <mat-icon>menu</mat-icon>
+        </button>
+        <span class="toolbar-title">Architect Showcase</span>
+        <span class="spacer"></span>
+
+        <!-- Demo actions -->
+        <button mat-stroked-button color="warn" (click)="triggerGlobalErrorDemo()" class="error-trigger-btn">
+          <mat-icon>bug_report</mat-icon> TRIGGER GLOBAL RUNTIME ERROR
+        </button>
+      </mat-toolbar>
+
+      <main class="main-content">
+        <router-outlet></router-outlet>
+      </main>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

@@ -1,0 +1,258 @@
+<div class="page-container">
+  <header class="page-header">
+    <div class="page-title-box">
+      <mat-icon>query_stats</mat-icon>
+      <h1>Performance Optimization Suite</h1>
+    </div>
+    <p class="page-description">
+      Audit Angular performance design rules. Compare large-list virtual rendering, DOM recreation prevention using <code>trackBy</code>, and template calculation caching via pure pipes.
+    </p>
+  </header>
+
+  <div class="grid-2">
+    <!-- Left Column: Interactive Demos -->
+    <div class="demos-column">
+      <!-- Part 1: CDK Virtual Scrolling -->
+      <mat-card class="section-card scrolling-card">
+        <div class="section-title-bar">
+          <mat-icon>layers</mat-icon>
+          <h2>CDK Virtual Scrolling (10,000 Nodes)</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block">
+            Standard <code>*ngFor</code> on 10,000 items freezes the browser because it creates 10,000 DOM elements.
+            <strong>CDK Virtual Scroll</strong> renders only the ~15 elements visible in the viewport, reusing templates during scroll.
+          </div>
+
+          <span class="viewport-lbl">Virtual Viewport Frame (Scroll down)</span>
+          <!-- CDK Virtual Scroll Viewport -->
+          <cdk-virtual-scroll-viewport itemSize="46" class="virtual-viewport">
+            <div *cdkVirtualFor="let item of largeItemsList(); let idx = index" class="viewport-item-row">
+              <span class="idx">#{{ idx }}</span>
+              <span class="lbl">{{ item.label }}</span>
+              <span class="val">Metric score: <strong>{{ item.value }}</strong></span>
+            </div>
+          </cdk-virtual-scroll-viewport>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Part 2: DOM Churn Profiler (trackBy) -->
+      <mat-card class="section-card profiler-card" style="margin-top: 24px;">
+        <div class="section-title-bar">
+          <mat-icon>gesture</mat-icon>
+          <h2>DOM Churn Profiler (trackBy)</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block">
+            Without <code>trackBy</code>, Angular recreates all DOM elements when arrays are updated, causing layout shifts.
+            With <code>trackBy</code>, Angular maps item IDs, updating only mutated elements.
+          </div>
+
+          <div class="profiler-controls">
+            <button mat-flat-button color="warn" (click)="refreshListWithoutTrackBy()">
+              Refresh array (NO trackBy)
+            </button>
+            <button mat-flat-button color="primary" (click)="refreshListWithTrackBy()">
+              Refresh array (WITH trackBy)
+            </button>
+          </div>
+
+          <div class="profiler-output-box">
+            <div>Profiler Mode: <strong class="mode-val" [class.with]="trackByProfilerStatus() === 'with'" [class.without]="trackByProfilerStatus() === 'without'">
+              {{ trackByProfilerStatus() | uppercase }}
+            </strong></div>
+            <div>Refreshes Executed: <strong>{{ trackByExecutionCount() }}</strong></div>
+          </div>
+
+          <!-- Small List demonstrating trackBy -->
+          <div class="items-list-container">
+            <!-- Loop without trackBy -->
+            <div *ngIf="trackByProfilerStatus() !== 'with'" class="list-wrapper">
+              <div *ngFor="let item of trackByList()" class="profile-item-row no-trackby-flash">
+                <span class="id">ID: {{ item.id }}</span>
+                <span class="name">{{ item.name }}</span>
+                <span class="val">Score: {{ item.randVal }}</span>
+              </div>
+            </div>
+
+            <!-- Loop WITH trackBy -->
+            <div *ngIf="trackByProfilerStatus() === 'with'" class="list-wrapper">
+              <div *ngFor="let item of trackByList(); trackBy: trackByIdentity" class="profile-item-row trackby-flash">
+                <span class="id">ID: {{ item.id }}</span>
+                <span class="name">{{ item.name }}</span>
+                <span class="val">Score: {{ item.randVal }}</span>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Part 3: Pure Pipe Caching vs Template Methods -->
+      <mat-card class="section-card computations-card" style="margin-top: 24px;">
+        <div class="section-title-bar">
+          <mat-icon>memory</mat-icon>
+          <h2>Pure Pipe Caching vs Template Methods</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block">
+            Invoking functions inside templates re-runs on every CD cycle (CPU lag).
+            <strong>Pure Pipes</strong> cache results, evaluating only when their input values change.
+          </div>
+
+          <div class="performance-metrics-CD">
+            <div class="metric-row">
+              <span>Template Function Calls Count (Spikes constantly):</span>
+              <strong class="count-danger">{{ templateMethodCallCount() }}</strong>
+            </div>
+          </div>
+
+          <div class="eval-columns">
+            <div class="eval-block">
+              <h5>Via Template Method (No Caching)</h5>
+              <div *ngFor="let num of memoizationNumbers()" class="eval-item danger">
+                <span>Value {{ num }}:</span>
+                <code>{{ heavyTemplateMethodCompute(num) }}</code>
+              </div>
+            </div>
+
+            <div class="eval-block">
+              <h5>Via Pure Pipe (Cached)</h5>
+              <div *ngFor="let num of memoizationNumbers()" class="eval-item success">
+                <span>Value {{ num }}:</span>
+                <code>{{ num | appPureCompute }}</code>
+              </div>
+            </div>
+          </div>
+
+          <div class="actions-row">
+            <button mat-stroked-button color="primary" class="full-width" (click)="triggerParentCD()">
+              Trigger Empty Change Detection Cycle
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Right Column: Code Explanation Panel -->
+    <div class="explanation-column">
+      <!-- Part 4: Detailed Code Explanation Panel -->
+      <mat-card class="section-card" style="height: 100%;">
+        <div class="section-title-bar">
+          <mat-icon>menu_book</mat-icon>
+          <h2>Code Sample &amp; Concept Explanation</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block" style="background: rgba(121, 134, 203, 0.05); border-left-color: #7986cb; margin-bottom: 24px;">
+            <strong>Angular Performance Pillars:</strong>
+            <ul>
+              <li><strong>Virtual Scrolling</strong>: Crucial for large arrays (thousands of elements). Instead of overloading the browser by instantiating thousands of DOM nodes, CDK Virtual Scroll retains a fixed pool of nodes and dynamically swaps element bindings on scroll.</li>
+              <li><strong>TrackBy Function</strong>: Tells Angular how to unique-identify array objects. Without it, refreshing an array causes the entire DOM list to be destroyed and recreated. With it, Angular updates only modified DOM rows, eliminating DOM churn.</li>
+              <li><strong>Pure Pipes</strong>: Transform inputs to outputs inside templates. Angular caches pure pipe execution results. In contrast, calling component methods directly inside templates (e.g. <code ngNonBindable>&#123;&#123; compute(val) &#125;&#125;</code>) forces re-execution on every single change detection cycle.</li>
+            </ul>
+          </div>
+
+          <div class="explanation-sections">
+            <div class="explanation-block">
+              <h3>1. CDK Virtual Scrolling Implementation</h3>
+              <p class="page-description">Using Angular CDK to render massive arrays smoothly.</p>
+              <pre ngNonBindable><code>&lt;!-- HTML Template Usage --&gt;
+&lt;cdk-virtual-scroll-viewport itemSize="46" class="virtual-viewport"&gt;
+  &lt;div *cdkVirtualFor="let item of largeItemsList(); let idx = index" class="viewport-item-row"&gt;
+    &lt;span&gt;Row #&#123;&#123; idx &#125;&#125;&lt;/span&gt;
+    &lt;span&gt;&#123;&#123; item.label &#125;&#125;&lt;/span&gt;
+  &lt;/div&gt;
+&lt;/cdk-virtual-scroll-viewport&gt;
+
+&lt;!-- TypeScript Component Controller --&gt;
+import &#123; ScrollingModule &#125; from '&#64;angular/cdk/scrolling';
+
+public readonly largeItemsList = signal&lt;Array&lt;&#123; id: number; label: string; value: number &#125;&gt;&gt;([]);
+
+ngOnInit(): void &#123;
+  const items = Array.from(&#123; length: 10000 &#125;).map((_, i) =&gt; (&#123;
+    id: i,
+    label: `Performance Metric #&#123;i&#125;`,
+    value: Math.floor(Math.random() * 1000) + 1
+  &#125;));
+  this.largeItemsList.set(items);
+&#125;</code></pre>
+            </div>
+
+            <div class="explanation-block" style="margin-top: 32px;">
+              <h3>2. TrackBy Array Mapping</h3>
+              <p class="page-description">Eliminating DOM churn by providing structural tracking identifiers in templates and TS.</p>
+              <pre ngNonBindable><code>&lt;!-- Inside HTML template loop --&gt;
+&lt;div *ngFor="let item of trackByList(); trackBy: trackByIdentity" class="profile-item-row"&gt;
+  &lt;span&gt;&#123;&#123; item.name &#125;&#125;&lt;/span&gt;
+&lt;/div&gt;
+
+&lt;!-- Inside TypeScript Component --&gt;
+public trackByIdentity(index: number, item: ProfileItem): number &#123;
+  return item.id;
+&#125;
+
+public refreshListWithTrackBy(): void &#123;
+  this.trackByProfilerStatus.set('with');
+  this.trackByList.set([
+    &#123; id: 1, name: 'Core Framework Bootstrap', randVal: 45 &#125;,
+    &#123; id: 2, name: 'Route Map compilation', randVal: 72 &#125;,
+    &#123; id: 3, name: 'Signal graph calculations', randVal: 19 &#125;
+  ]);
+&#125;</code></pre>
+            </div>
+
+            <div class="explanation-block" style="margin-top: 32px;">
+              <h3>3. Pure Pipe Memoization Caching</h3>
+              <p class="page-description">Applying pure pipe filters in templates, followed by the PipeTransform implementation.</p>
+              <pre ngNonBindable><code>&lt;!-- HTML Template Usage --&gt;
+&lt;div *ngFor="let num of memoizationNumbers()"&gt;
+  &lt;code&gt;&#123;&#123; num | appPureCompute &#125;&#125;&lt;/code&gt;
+&lt;/div&gt;
+
+&lt;!-- TypeScript Pipe Implementation --&gt;
+import &#123; Pipe, PipeTransform &#125; from '&#64;angular/core';
+
+&#64;Pipe(&#123;
+  name: 'appPureCompute',
+  standalone: true,
+  pure: true
+&#125;)
+export class PureComputePipe implements PipeTransform &#123;
+  public transform(value: number): string &#123;
+    const isPrimeResult = this.isPrime(value);
+    return `Prime: $&#123;isPrimeResult ? 'YES' : 'NO'&#125;`;
+  &#125;
+
+  private isPrime(num: number): boolean &#123;
+    if (num &lt;= 1) return false;
+    for (let i = 2; i &lt;= Math.sqrt(num); i++) &#123;
+      if (num % i === 0) return false;
+    &#125;
+    return true;
+  &#125;
+&#125;</code></pre>
+            </div>
+
+            <div class="explanation-block" style="margin-top: 32px;">
+              <h3>4. Anti-Pattern: Template Method Call</h3>
+              <p class="page-description">Why you should avoid calling component methods directly inside templates.</p>
+              <pre ngNonBindable><code>&lt;!-- HTML Template Usage (ANTI-PATTERN) --&gt;
+&lt;div *ngFor="let num of memoizationNumbers()"&gt;
+  &lt;code&gt;&#123;&#123; heavyTemplateMethodCompute(num) &#125;&#125;&lt;/code&gt;
+&lt;/div&gt;
+
+&lt;!-- Inside Component Controller --&gt;
+public heavyTemplateMethodCompute(value: number): string &#123;
+  Promise.resolve().then(() =&gt; &#123;
+    this.templateMethodCallCount.update((c) =&gt; c + 1);
+  &#125;);
+  const result = this.isPrimeCheck(value);
+  return `Prime: $&#123;result ? 'YES' : 'NO'&#125;`;
+&#125;</code></pre>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

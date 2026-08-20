@@ -1,0 +1,195 @@
+<div class="page-container">
+  <header class="page-header">
+    <div class="page-title-box">
+      <mat-icon>hourglass_empty</mat-icon>
+      <h1>Component Lifecycle Auditor</h1>
+    </div>
+    <p class="page-description">
+      Audit the lifecycle stages of Angular components in real-time. Mount or unmount components, modify input properties, and observe the sequential hook executions.
+    </p>
+  </header>
+
+  <div class="grid-2">
+    <!-- Left Column: Interactive Sandboxes -->
+    <div class="demos-column">
+      <!-- Part 1: Lifecycle Controller -->
+      <mat-card class="section-card">
+        <div class="section-title-bar">
+          <mat-icon>toggle_on</mat-icon>
+          <h2>Lifecycle Controller</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block">
+            Toggle mounting status to trace <code>OnInit</code>/<code>OnDestroy</code>.
+            Modify inputs to trace <code>OnChanges</code>. Trigger clicks to witness frequent check runs.
+          </div>
+
+          <div class="controls-box">
+            <!-- Mount Toggle -->
+            <div class="control-row">
+              <mat-slide-toggle [checked]="isChildMounted()" (change)="isChildMounted.set($event.checked)">
+                Mount Child Component: <strong>{{ isChildMounted() ? 'ON' : 'OFF' }}</strong>
+              </mat-slide-toggle>
+            </div>
+
+            <!-- Input state manipulators -->
+            <div class="input-mutation-row">
+              <mat-form-field appearance="outline" class="title-input">
+                <mat-label>Text Input Parameter (OnChanges)</mat-label>
+                <input matInput [ngModel]="textValue()" (ngModelChange)="textValue.set($event)" [disabled]="!isChildMounted()" />
+              </mat-form-field>
+
+              <div class="btn-row">
+                <button mat-raised-button color="accent" (click)="incrementInputs()" [disabled]="!isChildMounted()">
+                  Mutate Inputs
+                </button>
+                <button mat-stroked-button color="primary" (click)="triggerCheckRun()" [disabled]="!isChildMounted()">
+                  Trigger Change Detection
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Component Mounting Area -->
+          <div class="mounting-stage">
+            <span class="stage-label">Mounting Stage Frame</span>
+            <div class="stage-body">
+              <app-lifecycle-child
+                *ngIf="isChildMounted()"
+                [textInput]="textValue()"
+                [numericInput]="numericValue()"
+                (hookFired)="handleHookFired($event)"
+              ></app-lifecycle-child>
+              <div *ngIf="!isChildMounted()" class="unmounted-placeholder">
+                <mat-icon>block</mat-icon>
+                <span>Child Component is Unmounted. (ngOnDestroy executed)</span>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Part 2: Chronological Lifecycle Log -->
+      <mat-card class="section-card log-card" style="margin-top: 24px;">
+        <div class="section-title-bar">
+          <mat-icon>history</mat-icon>
+          <h2>Chronological Lifecycle Log</h2>
+          <button mat-icon-button (click)="clearLogs()" title="Clear logs list">
+            <mat-icon>delete_sweep</mat-icon>
+          </button>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="logs-timeline">
+            <div *ngIf="lifecycleLogs().length === 0" class="empty-state">
+              Log timeline is silent. Mount child or mutate inputs to capture hooks.
+            </div>
+
+            <div *ngFor="let item of lifecycleLogs()" class="log-entry-row">
+              <div class="log-meta">
+                <span class="order-badge">#{{ item.order }}</span>
+                <span class="badge" [ngClass]="item.hookName">{{ item.hookName }}</span>
+              </div>
+              <div class="log-details-text">
+                {{ item.details }}
+                <span class="time-stamp">{{ item.timestamp | date:'HH:mm:ss.SSS' }}</span>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Right Column: Code Explanation Panel -->
+    <div class="explanation-column">
+      <!-- Part 3: Detailed Code Explanation Panel -->
+      <mat-card class="section-card" style="height: 100%;">
+        <div class="section-title-bar">
+          <mat-icon>menu_book</mat-icon>
+          <h2>Code Sample &amp; Concept Explanation</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block" style="background: rgba(121, 134, 203, 0.05); border-left-color: #7986cb; margin-bottom: 24px;">
+            <strong>Angular Lifecycle Sequence:</strong>
+            <ol>
+              <li><strong>ngOnChanges</strong>: Fired before <code>ngOnInit</code> and every time an input property changes. Receives a <code>SimpleChanges</code> object containing current and previous values.</li>
+              <li><strong>ngOnInit</strong>: Fired once when component inputs are initialized. Used for setup code.</li>
+              <li><strong>ngDoCheck</strong>: Fired during every change detection cycle, allowing manual tracking of mutations.</li>
+              <li><strong>ngAfterContentInit / Checked</strong>: Fired after content projection elements are bound/checked.</li>
+              <li><strong>ngAfterViewInit / Checked</strong>: Fired after the component's view templates are fully rendered and bindings completed. Perfect for direct DOM work.</li>
+              <li><strong>ngOnDestroy</strong>: Fired right before the component is purged from the DOM. Essential for cleaning up subscriptions and timers.</li>
+            </ol>
+          </div>
+
+          <div class="explanation-sections">
+            <div class="explanation-block">
+              <h3>1. Parent HTML Template</h3>
+              <p class="page-description">Mounting and binding inputs dynamically to the child component.</p>
+              <pre ngNonBindable><code>&lt;!-- Conditional mount with active property inputs --&gt;
+&lt;app-lifecycle-child
+  *ngIf="isChildMounted()"
+  [textInput]="textValue()"
+  [numericInput]="numericValue()"
+  (hookFired)="handleHookFired($event)"
+&gt;&lt;/app-lifecycle-child&gt;</code></pre>
+            </div>
+
+            <div class="explanation-block" style="margin-top: 32px;">
+              <h3>2. Child Component TS (Initialization &amp; Outputs)</h3>
+              <p class="page-description">Tracking input modifications and initialization hooks.</p>
+              <pre ngNonBindable><code>import &#123; Component, Input, Output, EventEmitter, OnChanges, OnInit, SimpleChanges &#125; from '&#64;angular/core';
+
+&#64;Component(&#123;
+  selector: 'app-lifecycle-child',
+  standalone: true,
+  template: `&lt;div&gt;Active Child View&lt;/div&gt;`
+&#125;)
+export class LifecycleChildComponent implements OnChanges, OnInit &#123;
+  &#64;Input() textInput = '';
+  &#64;Input() numericInput = 0;
+  &#64;Output() hookFired = new EventEmitter&lt;&#123; hook: string; details?: string &#125;&gt;();
+
+  ngOnChanges(changes: SimpleChanges): void &#123;
+    const summary: string[] = [];
+    for (const key in changes) &#123;
+      const prop = changes[key];
+      summary.push(`$&#123;key&#125;: '$&#123;prop.previousValue&#125;' -&gt; '$&#123;prop.currentValue&#125;'`);
+    &#125;
+    this.hookFired.emit(&#123; hook: 'ngOnChanges', details: summary.join(', ') &#125;);
+  &#125;
+
+  ngOnInit(): void &#123;
+    this.hookFired.emit(&#123; hook: 'ngOnInit', details: 'Initialized component logic.' &#125;);
+  &#125;
+&#125;</code></pre>
+            </div>
+
+            <div class="explanation-block" style="margin-top: 32px;">
+              <h3>3. Child Component TS (View checking &amp; Teardown)</h3>
+              <p class="page-description">Intercepting template checking cycles and cleaning up references.</p>
+              <pre ngNonBindable><code>import &#123; DoCheck, AfterContentInit, AfterViewInit, OnDestroy &#125; from '&#64;angular/core';
+
+export class LifecycleChildComponent implements DoCheck, AfterContentInit, AfterViewInit, OnDestroy &#123;
+  
+  ngDoCheck(): void &#123;
+    this.hookFired.emit(&#123; hook: 'ngDoCheck', details: 'Checked for changes.' &#125;);
+  &#125;
+
+  ngAfterContentInit(): void &#123;
+    this.hookFired.emit(&#123; hook: 'ngAfterContentInit', details: 'Projected content fully bound.' &#125;);
+  &#125;
+
+  ngAfterViewInit(): void &#123;
+    this.hookFired.emit(&#123; hook: 'ngAfterViewInit', details: 'HTML view fully initialized.' &#125;);
+  &#125;
+
+  ngOnDestroy(): void &#123;
+    this.hookFired.emit(&#123; hook: 'ngOnDestroy', details: 'Component unmounted.' &#125;);
+  &#125;
+&#125;</code></pre>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

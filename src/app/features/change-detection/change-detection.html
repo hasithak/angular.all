@@ -1,0 +1,207 @@
+<div class="page-container">
+  <header class="page-header">
+    <div class="page-title-box">
+      <mat-icon>speed</mat-icon>
+      <h1>Change Detection Auditor</h1>
+    </div>
+    <p class="page-description">
+      Audit Angular's change detection strategies. Mutate properties passed to children, update parent-only states, and observe the template evaluation counters in real-time.
+    </p>
+  </header>
+
+  <div class="grid-2">
+    <!-- Left Column: Interactive Demos -->
+    <div class="demos-column">
+      <!-- Part 1: Control Center -->
+      <mat-card class="section-card control-dashboard-card">
+        <div class="section-title-bar">
+          <mat-icon>tune</mat-icon>
+          <h2>Auditor Control Center</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block">
+            Angular runs Change Detection (CD) to check if model updates require DOM refreshes.
+            Compare: <strong>Default (CheckAlways)</strong> runs CD on all events. <strong>OnPush (CheckOnce)</strong> runs CD only when Inputs change references or local events occur.
+          </div>
+
+          <div class="parent-state-box-CD">
+            <div class="state-cell">
+              <strong>Input Bound Counter (Passed to children):</strong>
+              <span class="value-highlight cyan-text">&#123;&#123; boundCounter() &#125;&#125;</span>
+            </div>
+            <div class="state-cell">
+              <strong>Parent Internal Counter (Not passed):</strong>
+              <span class="value-highlight pink-text">&#123;&#123; parentOnlyCounter() &#125;&#125;</span>
+            </div>
+          </div>
+
+          <div class="actions-row">
+            <!-- Mutate Input -> Mutates @Input, both children should check -->
+            <button mat-flat-button color="primary" (click)="incrementBoundInput()">
+              Mutate Input Bound Count
+            </button>
+
+            <!-- Mutate Parent State -> CD runs. Default checks, OnPush ignores because its inputs didn't change! -->
+            <button mat-flat-button color="accent" (click)="incrementParentOnlyState()">
+              Mutate Parent-Only State
+            </button>
+
+            <!-- Trigger empty event -> CD runs. Default checks, OnPush ignores! -->
+            <button mat-stroked-button color="primary" (click)="triggerCDCycle()">
+              Trigger CD Cycle (Empty Event)
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Part 2: Strategy Auditor Views -->
+      <mat-card class="section-card" style="margin-top: 24px;">
+        <div class="section-title-bar">
+          <mat-icon>visibility</mat-icon>
+          <h2>Strategy Auditor Views</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="auditor-split-grid">
+            <!-- Default Strategy Auditor Column -->
+            <div class="auditor-col">
+              <div class="col-header">
+                <mat-icon color="warn">autorenew</mat-icon>
+                <h3>Default Strategy Child</h3>
+              </div>
+              <app-default-child [parentCount]="boundCounter()"></app-default-child>
+              <div class="col-summary-card">
+                <h4>Behavior Summary:</h4>
+                <p>Every time you click "Mutate Parent-Only State" or "Trigger CD Cycle", this component's evaluation count increments. Even though its Inputs did not change, Angular checks this component because it uses the <strong>Default</strong> strategy.</p>
+              </div>
+            </div>
+
+            <!-- OnPush Strategy Auditor Column -->
+            <div class="auditor-col">
+              <div class="col-header">
+                <mat-icon color="accent">offline_bolt</mat-icon>
+                <h3>OnPush Strategy Child</h3>
+              </div>
+              <app-onpush-child [parentCount]="boundCounter()"></app-onpush-child>
+              <div class="col-summary-card">
+                <h4>Behavior Summary:</h4>
+                <p>This component's evaluation count stays silent when parent-only actions occur. It ONLY increments when the Input is mutated, when an event originates within it, or when manually forced using <code>ChangeDetectorRef</code>.</p>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Right Column: Code Explanation Panel -->
+    <div class="explanation-column">
+      <!-- Part 3: Detailed Code Explanation Panel -->
+      <mat-card class="section-card" style="height: 100%;">
+        <div class="section-title-bar">
+          <mat-icon>menu_book</mat-icon>
+          <h2>Code Sample &amp; Concept Explanation</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block" style="background: rgba(121, 134, 203, 0.05); border-left-color: #7986cb; margin-bottom: 24px;">
+            <strong>Angular Change Detection:</strong>
+            <ul>
+              <li><strong>Default Strategy</strong>: Checks the component and its children during every change detection cycle, regardless of whether inputs changed. This is straightforward but can cause performance bottlenecks in complex trees.</li>
+              <li><strong>OnPush Strategy</strong>: Instructs Angular to skip checking the component unless an <code>&#64;Input</code> reference changes, an event triggers inside the component, or change detection is manually requested using <code>ChangeDetectorRef.markForCheck()</code>.</li>
+              <li><strong>Immutability is Key</strong>: With OnPush, mutating an object field directly (<code>obj.val = 5</code>) does NOT trigger change detection because the object reference remains the same. You must return a new reference (<code>obj = &#123; ...obj, val: 5 &#125;</code>).</li>
+            </ul>
+          </div>
+
+          <div class="explanation-sections">
+            <div class="explanation-block">
+              <h3>1. Parent HTML Template</h3>
+              <p class="page-description">Passing inputs to both Default and OnPush strategy components.</p>
+              <pre ngNonBindable><code>&lt;!-- Renders child components passing the same parent counter --&gt;
+&lt;app-default-child [parentCount]="boundCounter()"&gt;&lt;/app-default-child&gt;
+&lt;app-onpush-child [parentCount]="boundCounter()"&gt;&lt;/app-onpush-child&gt;</code></pre>
+            </div>
+
+            <div class="explanation-block" style="margin-top: 32px;">
+              <h3>2. Default Strategy Component TS</h3>
+              <p class="page-description">Standard behavior checking template updates on every digest cycle.</p>
+              <pre ngNonBindable><code>import &#123; Component, Input, ChangeDetectionStrategy &#125; from '&#64;angular/core';
+
+&#64;Component(&#123;
+  selector: 'app-default-child',
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.Default,
+  template: `
+    &lt;mat-card class="strategy-card default-style"&gt;
+      &lt;h3 class="strategy-title"&gt;Default Strategy&lt;/h3&gt;
+      &lt;div class="card-metric"&gt;
+        &lt;span&gt;Template Evaluation Count:&lt;/span&gt;
+        &lt;strong class="count-glow"&gt;&#123;&#123; checkRender() &#125;&#125;&lt;/strong&gt;
+      &lt;/div&gt;
+      &lt;div class="card-metric"&gt;
+        &lt;span&gt;Received Input Count:&lt;/span&gt;
+        &lt;strong&gt;&#123;&#123; parentCount &#125;&#125;&lt;/strong&gt;
+      &lt;/div&gt;
+      &lt;p class="desc-info"&gt;Re-evaluates every time ANY event occurs.&lt;/p&gt;
+    &lt;/mat-card&gt;
+  `
+&#125;)
+export class DefaultChildComponent &#123;
+  &#64;Input() parentCount = 0;
+  private checkCount = 0;
+
+  public checkRender(): number &#123;
+    this.checkCount++;
+    return this.checkCount;
+  &#125;
+&#125;</code></pre>
+            </div>
+
+            <div class="explanation-block" style="margin-top: 32px;">
+              <h3>3. OnPush Strategy Component TS</h3>
+              <p class="page-description">Skips rendering cycles unless input references mutate.</p>
+              <pre ngNonBindable><code>import &#123; Component, Input, ChangeDetectionStrategy, inject, ChangeDetectorRef &#125; from '&#64;angular/core';
+
+&#64;Component(&#123;
+  selector: 'app-onpush-child',
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    &lt;mat-card class="strategy-card onpush-style"&gt;
+      &lt;h3 class="strategy-title"&gt;OnPush Strategy&lt;/h3&gt;
+      &lt;div class="card-metric"&gt;
+        &lt;span&gt;Template Evaluation Count:&lt;/span&gt;
+        &lt;strong class="count-glow"&gt;&#123;&#123; checkRender() &#125;&#125;&lt;/strong&gt;
+      &lt;/div&gt;
+      &lt;div class="card-metric"&gt;
+        &lt;span&gt;Received Input Count:&lt;/span&gt;
+        &lt;strong&gt;&#123;&#123; parentCount &#125;&#125;&lt;/strong&gt;
+      &lt;/div&gt;
+      &lt;p class="desc-info"&gt;Only re-evaluates when Inputs change or events fire.&lt;/p&gt;
+      &lt;div class="onpush-actions"&gt;
+        &lt;button mat-stroked-button (click)="triggerLocalEvent()"&gt;Trigger Local Event&lt;/button&gt;
+        &lt;button mat-stroked-button (click)="forceChangeDetection()"&gt;CD markForCheck()&lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/mat-card&gt;
+  `
+&#125;)
+export class OnPushChildComponent &#123;
+  private readonly cdr = inject(ChangeDetectorRef);
+  &#64;Input() parentCount = 0;
+  private checkCount = 0;
+
+  public checkRender(): number &#123;
+    this.checkCount++;
+    return this.checkCount;
+  &#125;
+
+  public triggerLocalEvent(): void &#123;&#125;
+
+  public forceChangeDetection(): void &#123;
+    this.cdr.markForCheck();
+  &#125;
+&#125;</code></pre>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,266 @@
+<div class="page-container">
+  <header class="page-header">
+    <div class="page-title-box">
+      <mat-icon>offline_bolt</mat-icon>
+      <h1>Angular Signals Studio</h1>
+    </div>
+    <p class="page-description">
+      Audit fine-grained reactivity using Angular Signals. Compare read-write values, derived computed states, and automatic dependency-tracked effects.
+    </p>
+  </header>
+
+  <div class="grid-2">
+    <!-- Left Column: Interactive Demos -->
+    <div class="demos-column">
+      <!-- Part 1: Calculator Sandbox -->
+      <mat-card class="section-card">
+        <div class="section-title-bar">
+          <mat-icon>science</mat-icon>
+          <h2>Signals Calculator Sandbox</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <!-- Quantity increment -->
+          <div class="calc-row">
+            <div class="field-control">
+              <span class="lbl">Quantity:</span>
+              <div class="counter-actions">
+                <button mat-icon-button color="primary" (click)="decrementQuantity()">
+                  <mat-icon>remove_circle_outline</mat-icon>
+                </button>
+                <span class="qty-val">{{ quantity() }}</span>
+                <button mat-icon-button color="primary" (click)="incrementQuantity()">
+                  <mat-icon>add_circle_outline</mat-icon>
+                </button>
+              </div>
+            </div>
+
+            <!-- Price input -->
+            <mat-form-field appearance="outline" class="price-field">
+              <mat-label>Unit Price ($)</mat-label>
+              <input matInput type="number" [value]="unitPrice()" (input)="updatePrice($event)" />
+            </mat-form-field>
+          </div>
+
+          <!-- Total results computed -->
+          <div class="computed-result-box">
+            <div class="result-row">
+              <span>Computed Total Cost:</span>
+              <strong class="total-val">${{ totalCost() }}</strong>
+            </div>
+
+            <!-- Conditional computed warning -->
+            <div class="discount-banner" *ngIf="isDiscountEligible()" [class.active]="isDiscountEligible()">
+              <mat-icon>local_offer</mat-icon>
+              <span>Discount Eligible! Order value exceeds $100. (Computed evaluation)</span>
+            </div>
+          </div>
+
+          <mat-divider class="divider-spacing"></mat-divider>
+
+          <!-- Array state mutations -->
+          <div class="signals-array-section">
+            <h3>Array Mutations (tags: signal&lt;string[]&gt;)</h3>
+            <div class="tag-input-row">
+              <mat-form-field appearance="outline" class="tag-input">
+                <mat-label>New Tag Name</mat-label>
+                <input matInput [(ngModel)]="newTagText" placeholder="e.g. RxJS" (keyup.enter)="addTagItem()" />
+              </mat-form-field>
+              <button mat-flat-button color="primary" class="add-btn" (click)="addTagItem()" [disabled]="!newTagText.trim()">
+                ADD
+              </button>
+            </div>
+
+            <!-- Rendered tags list -->
+            <div class="tags-list">
+              <span *ngFor="let tag of tags(); let idx = index" class="tag-badge">
+                {{ tag }}
+                <mat-icon class="close-icon" (click)="removeTagItem(idx)">close</mat-icon>
+              </span>
+            </div>
+          </div>
+
+          <mat-divider class="divider-spacing"></mat-divider>
+
+          <!-- Effect logging dashboard -->
+          <div class="effect-logs-container">
+            <div class="logs-header-CD">
+              <span>Effect Execution Tracers (effect())</span>
+              <button mat-icon-button (click)="clearEffectLogs()" title="Clear logs">
+                <mat-icon>delete_sweep</mat-icon>
+              </button>
+            </div>
+
+            <div class="effect-logs-timeline">
+              <div *ngFor="let log of effectLogs()" class="effect-log-row">
+                <span class="log-time">{{ log.timestamp | date:'HH:mm:ss.SSS' }}</span>
+                <span class="log-msg">{{ log.message }}</span>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Part 2: Signals vs RxJS comparative table -->
+      <mat-card class="section-card compare-card" style="margin-top: 24px;">
+        <div class="section-title-bar">
+          <mat-icon>compare_arrows</mat-icon>
+          <h2>Signals vs RxJS Streams Comparison</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block">
+            Signals represent <strong>state values</strong> (synchronous, subscription-free, caching). RxJS represents <strong>event streams</strong> (asynchronous, multi-operator, cancellation).
+          </div>
+
+          <div class="compare-table-wrapper">
+            <table class="compare-table">
+              <thead>
+                <tr>
+                  <th>Capability</th>
+                  <th>Angular Signals</th>
+                  <th>RxJS Observables</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Syntax</strong></td>
+                  <td><code>val = signal(1)</code><br>Read: <code>val()</code></td>
+                  <td><code>val$ = new BehaviorSubject(1)</code><br>Read: <code>val$ | async</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Subscriptions</strong></td>
+                  <td><span class="badge success">None Required</span><br>Updates DOM directly.</td>
+                  <td><span class="badge warn">Required</span><br>Requires manual cleanup or async pipe.</td>
+                </tr>
+                <tr>
+                  <td><strong>Memory Leaks</strong></td>
+                  <td><span class="badge success">Safe</span><br>Auto-destroys with component.</td>
+                  <td><span class="badge warn">Risky</span><br>Leaky if not unsubscribed.</td>
+                </tr>
+                <tr>
+                  <td><strong>Derived Caching</strong></td>
+                  <td><code>computed(() => ...)</code><br>Caches output value dynamically.</td>
+                  <td>Requires custom operator logic (e.g. <code>shareReplay</code>).</td>
+                </tr>
+                <tr>
+                  <td><strong>Dependency Audit</strong></td>
+                  <td><span class="badge success">Automatic</span><br>Detects dependencies at runtime.</td>
+                  <td><span class="badge warn">Manual</span><br>Requires combining arrays explicitly.</td>
+                </tr>
+                <tr>
+                  <td><strong>Core Purpose</strong></td>
+                  <td>Fine-grained State tracking.</td>
+                  <td>Asynchronous Event flow orchestration.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Right Column: Code Explanation Panel -->
+    <div class="explanation-column">
+      <!-- Part 3: Detailed Code Explanation Panel -->
+      <mat-card class="section-card" style="height: 100%;">
+        <div class="section-title-bar">
+          <mat-icon>menu_book</mat-icon>
+          <h2>Code Sample &amp; Concept Explanation</h2>
+        </div>
+        <mat-card-content class="section-content">
+          <div class="theory-block" style="background: rgba(121, 134, 203, 0.05); border-left-color: #7986cb; margin-bottom: 24px;">
+            <strong>Signal Architecture:</strong>
+            <ul>
+              <li><strong>signal(initialValue)</strong>: Declares a read-write signal. Update using <code>.set(val)</code> to overwrite or <code>.update(fn)</code> to calculate values relative to current state.</li>
+              <li><strong>computed(fn)</strong>: Compiles a read-only derived signal. It automatically tracks any signal read inside <code>fn</code> and caches output dynamically. Only re-evaluates if dependencies change.</li>
+              <li><strong>effect(fn)</strong>: Spawns side effects. Angular registers dependency signals and runs <code>fn</code> asynchronously whenever their states change. MUST be executed inside an injection context (e.g. constructor).</li>
+            </ul>
+          </div>
+
+          <div class="explanation-sections">
+            <div class="explanation-block">
+              <h3>1. Writable Signals &amp; Mutations</h3>
+              <p class="page-description">Reading signals in templates, followed by TS declarations and updates.</p>
+              <pre ngNonBindable><code>&lt;!-- HTML Template Usage --&gt;
+&lt;span&gt;Quantity: &#123;&#123; quantity() &#125;&#125;&lt;/span&gt;
+&lt;button (click)="decrementQuantity()"&gt;Decrement&lt;/button&gt;
+&lt;button (click)="incrementQuantity()"&gt;Increment&lt;/button&gt;
+
+&lt;!-- Array state mutations --&gt;
+&lt;input [(ngModel)]="newTagText" /&gt;
+&lt;button (click)="addTagItem()"&gt;ADD&lt;/button&gt;
+&lt;span *ngFor="let tag of tags()"&gt;&#123;&#123; tag &#125;&#125;&lt;/span&gt;
+
+&lt;!-- TypeScript Component Controller --&gt;
+public quantity = signal(1);
+public tags = signal&lt;string[]&gt;(['Angular', 'Signals', 'Reactivity']);
+public newTagText = '';
+
+public incrementQuantity(): void &#123;
+  this.quantity.update((q) =&gt; q + 1);
+&#125;
+
+public decrementQuantity(): void &#123;
+  if (this.quantity() &gt; 1) &#123;
+    this.quantity.update((q) =&gt; q - 1);
+  &#125;
+&#125;
+
+public addTagItem(): void &#123;
+  if (!this.newTagText.trim()) return;
+  this.tags.update((current) =&gt; [...current, this.newTagText.trim()]);
+  this.newTagText = '';
+&#125;</code></pre>
+            </div>
+
+            <div class="explanation-block" style="margin-top: 32px;">
+              <h3>2. Computed Derived Values</h3>
+              <p class="page-description">Consuming computed values in templates, followed by the computed() function in TS.</p>
+              <pre ngNonBindable><code>&lt;!-- HTML Template Usage --&gt;
+&lt;strong&gt;$&#123;&#123; totalCost() &#125;&#125;&lt;/strong&gt;
+&lt;div *ngIf="isDiscountEligible()"&gt;Discount Eligible!&lt;/div&gt;
+
+&lt;!-- TypeScript Component Controller --&gt;
+public quantity = signal(1);
+public unitPrice = signal(25);
+
+public totalCost = computed(() =&gt; this.quantity() * this.unitPrice());
+public isDiscountEligible = computed(() =&gt; this.totalCost() &gt;= 100);</code></pre>
+            </div>
+
+            <div class="explanation-block" style="margin-top: 32px;">
+              <h3>3. Reactive Side Effects</h3>
+              <p class="page-description">Side effects are strictly TypeScript background routines with auto-tracking.</p>
+              <pre ngNonBindable><code>// Triggered automatically on dependency changes
+public readonly effectLogs = signal&lt;SignalEffectLog[]&gt;([]);
+
+constructor() &#123;
+  effect(() =&gt; &#123;
+    const currentTotal = this.totalCost();
+    const currentQty = this.quantity();
+    const currentPrice = this.unitPrice();
+    console.log(`Qty($&#123;currentQty&#125;) * Price($$&#123;currentPrice&#125;) = $&#123;currentTotal&#125;`);
+  &#125;);
+&#125;</code></pre>
+            </div>
+
+            <div class="explanation-block" style="margin-top: 32px;">
+              <h3>4. RxJS Interoperability</h3>
+              <p class="page-description">Consuming interoperable streams in templates, followed by interop helper declarations in TS.</p>
+              <pre ngNonBindable><code>&lt;!-- HTML Template Usage --&gt;
+&lt;div *ngFor="let item of productsSignal()"&gt;&#123;&#123; item.name &#125;&#125;&lt;/div&gt;
+
+&lt;!-- TypeScript Component Declarations --&gt;
+import &#123; toSignal, toObservable &#125; from '&#64;angular/core/rxjs-interop';
+
+// 1. Observable -> Signal
+public productsSignal = toSignal(this.products$, &#123; initialValue: [] &#125;);
+
+// 2. Signal -> Observable
+public quantity$ = toObservable(this.quantity);</code></pre>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

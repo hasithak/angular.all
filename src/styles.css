@@ -1,0 +1,200 @@
+/* Global Styles */
+body {
+  background-color: #0c0c14;
+  color: #ffffff;
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  margin: 0;
+  height: 100vh;
+  box-sizing: border-box;
+}
+
+/* Custom Scrollbar for the main application viewport */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0c0c14;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #252538;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3f51b5;
+}
+
+/* Common Layout Elements */
+.page-header {
+  margin-bottom: 24px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.01) 100%);
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.page-title-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.page-title-box h1 {
+  font-size: 24px;
+  font-weight: 500;
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.page-title-box mat-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+  color: #e91e63;
+}
+
+.page-description {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+/* Showcase Section Containers */
+.section-card {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-radius: 12px !important;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+
+.section-title-bar {
+  background: rgba(0, 0, 0, 0.15);
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-title-bar h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: #ffffff;
+}
+
+.section-content {
+  padding: 20px;
+}
+
+/* Theory Info Blocks */
+.theory-block {
+  background: rgba(63, 81, 181, 0.08);
+  border-left: 4px solid #3f51b5;
+  padding: 16px;
+  border-radius: 0 8px 8px 0;
+  margin-bottom: 20px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.theory-block p {
+  margin: 0 0 10px 0;
+}
+
+.theory-block ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.theory-block li {
+  margin-bottom: 4px;
+}
+
+.theory-block strong {
+  color: #7986cb;
+}
+
+/* Custom code block styling */
+code {
+  font-family: 'Consolas', 'Monaco', monospace;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #e91e63;
+  font-size: 12px;
+}
+
+pre {
+  background: #08080f;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 16px;
+  overflow-x: auto;
+  margin: 12px 0;
+}
+
+pre code {
+  background: none;
+  padding: 0;
+  color: #81c784;
+}
+
+/* Card grids */
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+/* Material Override Overrides for Dark aesthetics */
+.mat-mdc-tab-group {
+  --mdc-tab-indicator-active-indicator-color: #e91e63 !important;
+  --mdc-tab-indicator-active-indicator-height: 3px !important;
+}
+
+.mat-mdc-tab .mdc-tab-indicator__content--underline {
+  border-color: #e91e63 !important;
+}
+
+.mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
+  color: #ffffff !important;
+}
+
+.mat-mdc-tab .mdc-tab__text-label {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.mat-mdc-tab-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: rgba(0, 0, 0, 0.15) !important;
+}
+
+.mat-mdc-tab-body-wrapper {
+  background: transparent !important;
+}
+
+/* Buttons */
+.btn-primary-gradient {
+  background: linear-gradient(135deg, #3f51b5 0%, #e91e63 100%) !important;
+  color: #ffffff !important;
+}
+
+/* Common form alignments */
+.form-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.form-field-flex {
+  flex: 1;
+  min-width: 200px;
+}
